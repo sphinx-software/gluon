@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+    mysql:
+        image: "mysql:5.5"
+        ports:
+          - "3306:3306"
+        environment:
+          - MYSQL_RANDOM_ROOT_PASSWORD=true
+          - MYSQL_USER=gluon
+          - MYSQL_PASSWORD=gluon
+          - MYSQL_DATABASE=gluon
