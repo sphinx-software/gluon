@@ -186,6 +186,28 @@ export default class DatabaseRepository {
             }
         }
 
+        if (this.timestamps) {
+            let createdAtField = this.fields[this.timestamps]['name'][0];
+            let updatedAtField = this.fields[this.timestamps]['name'][1];
+
+            this.orders.forEach(order => {
+                switch (order) {
+                    case 'newest':
+                        query.orderBy(createdAtField, 'DESC');
+                        break;
+                    case 'latest':
+                        query.orderBy(updatedAtField, 'DESC');
+                        break;
+                    case 'oldest':
+                        query.orderBy(createdAtField);
+                        break;
+                    case 'earliest':
+                        query.orderBy(updatedAtField);
+                        break
+                }
+            })
+        }
+
         this.conditionalReset();
 
         return query;
@@ -239,7 +261,8 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     newest() {
-
+        this.orders.push('newest');
+        return this;
     }
 
     /**
@@ -248,7 +271,8 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     latest() {
-
+        this.orders.push('latest');
+        return this;
     }
 
     /**
@@ -257,7 +281,8 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     oldest() {
-
+        this.orders.push('oldest');
+        return this;
     }
 
     /**
@@ -266,14 +291,16 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     earliest() {
-
+        this.orders.push('earliest');
+        return this;
     }
 
     /**
      * Reset the conditional search strategies
      */
     conditionalReset() {
-        this.trash = 'no';
+        this.trash  = 'no';
+        this.orders = [];
     }
 
 

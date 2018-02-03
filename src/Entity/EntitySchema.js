@@ -157,7 +157,7 @@ export default class EntitySchema {
      * Apply this proxy to the entity instance
      *
      * @param {Entity} entity
-     * @return {object}
+     * @return {Entity}
      */
     static applyFor(entity) {
         return new Proxy(entity, new EntitySchema(...EntitySchema.inspect(entity.constructor)));
