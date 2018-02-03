@@ -241,6 +241,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     includeTrash() {
+        if (!this.softDelete) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [SoftDelete] field type`);
+        }
         this.trash = 'include';
         return this;
     }
@@ -251,6 +254,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     onlyTrash() {
+        if (!this.softDelete) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [SoftDelete] field type`);
+        }
         this.trash = 'only';
         return this;
     }
@@ -261,6 +267,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     newest() {
+        if (!this.timestamps) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [Timestamps] field type`);
+        }
         this.orders.push('newest');
         return this;
     }
@@ -271,6 +280,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     latest() {
+        if (!this.timestamps) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [Timestamps] field type`);
+        }
         this.orders.push('latest');
         return this;
     }
@@ -281,6 +293,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     oldest() {
+        if (!this.timestamps) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [Timestamps] field type`);
+        }
         this.orders.push('oldest');
         return this;
     }
@@ -291,6 +306,9 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     earliest() {
+        if (!this.timestamps) {
+            throw new Error(`E_DATABASE_REPOSITORY: The entity [${this.Entity.name}] does not have [Timestamps] field type`);
+        }
         this.orders.push('earliest');
         return this;
     }
