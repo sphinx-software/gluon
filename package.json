@@ -1,7 +1,7 @@
 {
   "name": "@sphinx-software/gluon",
   "version": "1.0.0",
-  "description": "A data modeling framewwork for Fusion.",
+  "description": "A data modeling framework for Fusion.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
