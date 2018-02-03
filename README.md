@@ -21,3 +21,52 @@ Let's start with Domain Driven Design basic concepts:
 - Repository & Data Mapper
 
 
+Okay, okay, enough talk! Let's write some codes
+
+```javascript
+
+@bind()
+export class Credential {
+
+    @type(PrimaryKey)
+    id = 1;
+
+    @type(String)
+    username = '';
+
+    @type(Hashed)
+    password = '';
+    
+    @type(SoftDelete)
+    deletedAt = null;
+    
+    @type(Timestamps, 'created_at', 'updated_at')
+    timestamps = null;
+}
+
+
+@singleton()
+@databaseRepository(Credential)
+export class CredentialRepository extends DatabaseRepository {
+
+}
+```
+
+And we are done!
+
+
+```javascript
+
+let credentialWithId1 = await credentialRepository.get(1);
+
+let newCredential     = await credentialRepository.create({username: 'sexyRikky', password: 'I will not tell ya~!'});
+
+let allOfCredentials  = await credentialRepository.all();
+
+let deletedCredendeitals = await credentialWithId1.onlyTrash().all();
+
+
+/// more and more stuff ;)
+```
+
+OKay. Now, let check this out!
