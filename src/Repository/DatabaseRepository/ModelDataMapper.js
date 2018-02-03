@@ -9,7 +9,7 @@ export default class ModelDataMapper {
 
             let storageValue =
                 fieldSchema.name.length ?
-                    lodash.pick(row, fieldSchema.name) :
+                    fieldSchema.name.map(name => row[name]) :
                     row[NamingConvention.columnName(fieldName)]
             ;
 
