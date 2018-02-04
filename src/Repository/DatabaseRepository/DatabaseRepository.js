@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import NamingConvention from "./NamingConvention";
 import {PrimaryKey, SoftDelete, Timestamps} from "../../DataType";
-import ModelDataMapper from "./ModelDataMapper";
+import EntityDataMapper from "./EntityDataMapper";
 import EntitySchema from "../../Entity/EntitySchema";
 
 /**
@@ -47,7 +47,7 @@ export default class DatabaseRepository {
         let rawData = await query;
 
         return await Promise.all(rawData.map(async (row) => {
-            let fields = await ModelDataMapper.map(row, this.fields, this.container);
+            let fields = await EntityDataMapper.toEntity(row, this.fields, this.container);
             let entity = await this.makeEntity();
 
             entity.schema.guardOff();
@@ -76,7 +76,7 @@ export default class DatabaseRepository {
             return defaultDataIfNotExisted;
         }
 
-        let fields = ModelDataMapper.map(row, this.fields, this.container);
+        let fields = EntityDataMapper.toEntity(row, this.fields, this.container);
         let entity = await this.makeEntity();
 
         entity.schema.guardOff();
@@ -101,7 +101,7 @@ export default class DatabaseRepository {
             return defaultDataIfNotExisted;
         }
 
-        let fields = await ModelDataMapper.map(row, this.fields, this.container);
+        let fields = await EntityDataMapper.toEntity(row, this.fields, this.container);
         let entity = await this.makeEntity();
 
         entity.schema.guardOff();
@@ -120,7 +120,7 @@ export default class DatabaseRepository {
         let rawData = await query;
 
         return await Promise.all(rawData.map(async (row) => {
-            let fields = await ModelDataMapper.map(row, this.fields, this.container);
+            let fields = await EntityDataMapper.toEntity(row, this.fields, this.container);
             let entity = await this.makeEntity();
 
             entity.schema.guardOff();
@@ -135,11 +135,32 @@ export default class DatabaseRepository {
      * Create a new model in this repository and
      * returns its instance
      *
-     * @param {*} modelProperties
+     * @param {*} entityFields
      * @return {Promise<Entity>}
      */
-    async create(modelProperties) {
-        // todo
+    async create(entityFields) {
+        if (this.timestamps) {
+            entityFields[this.timestamps] = new Timestamps(new Date(), null);
+        }
+
+        let rowData = await EntityDataMapper.toDatabaseStorage(entityFields, this.fields, this.container);
+
+        let id      = (await this.makeQuery().insert(rowData))[0];
+        let entity  = await this.makeEntity();
+
+        entityFields[this.identifier] = id;
+
+        let syncedEntityFields = await EntityDataMapper.toEntity(
+            await EntityDataMapper.toDatabaseStorage(entityFields, this.fields, this.container),
+            this.fields,
+            this.container
+        );
+
+        entity.schema.guardOff();
+        entity.setFields(syncedEntityFields);
+        entity.schema.guardOn();
+
+        return entity;
     }
 
     /**
