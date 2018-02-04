@@ -4,11 +4,11 @@ import Value from "./Value";
  * @implements DataTypeInterface
  */
 export default class Json extends Value {
-    static fromStorage(storageValue) {
+    static async fromStorage(storageValue) {
         return JSON.parse(storageValue);
     }
 
-    static toStorage(modelValue) {
+    static async toStorage(modelValue) {
         return JSON.stringify(modelValue);
     }
 }

@@ -48,7 +48,7 @@ export default class Timestamps extends Value {
      * @param {Array} value
      * @return {Timestamps}
      */
-    static fromStorage(value) {
+    static async fromStorage(value) {
         return new Timestamps(
             value[0] ? new Date(value[0]) : null,
             value[1] ? new Date(value[1]) : null
@@ -60,7 +60,7 @@ export default class Timestamps extends Value {
      * @param {Timestamps} modelValue
      * @return {Array}
      */
-    static toStorage(modelValue) {
+    static async toStorage(modelValue) {
         return [
             modelValue.getCreatedAt() ? modelValue.getCreatedAt().getTime() : null,
             modelValue.getUpdatedAt() ? modelValue.getUpdatedAt().getTime() : null

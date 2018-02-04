@@ -4,11 +4,11 @@ import Value from "./Value";
  * @implements DataTypeInterface
  */
 export default class Float extends Value {
-    static fromStorage(storageValue) {
+    static async fromStorage(storageValue) {
         return parseFloat(storageValue);
     }
 
-    static toStorage(modelValue) {
+    static async toStorage(modelValue) {
         return modelValue;
     }
 }

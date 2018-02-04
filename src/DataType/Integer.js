@@ -4,11 +4,11 @@ import Value from "./Value";
  * @implements DataTypeInterface
  */
 export default class Integer extends Value {
-    static fromStorage(storageValue) {
+    static async fromStorage(storageValue) {
         return parseInt(storageValue);
     }
 
-    static toStorage(modelValue) {
+    static async toStorage(modelValue) {
         return modelValue;
     }
 }

@@ -5,11 +5,11 @@ import Value from "./Value";
  */
 export default class String extends Value {
 
-    static fromStorage(storageValue) {
+    static async fromStorage(storageValue) {
         return storageValue.toString();
     }
 
-    static toStorage(modelValue) {
+    static async toStorage(modelValue) {
         return modelValue.toString();
     }
 }
