@@ -1,11 +1,12 @@
 import NamingConvention from "./NamingConvention";
+import Promise from "bluebird";
 import lodash from "lodash";
 
 export default class ModelDataMapper {
 
-    static map(row, fieldsSchema) {
+    static async map(row, fieldsSchema, container) {
 
-        return lodash.mapValues(fieldsSchema, (fieldSchema, fieldName) => {
+        return Promise.props(lodash.mapValues(fieldsSchema, (fieldSchema, fieldName) => {
 
             let storageValue =
                 fieldSchema.name.length ?
@@ -17,7 +18,7 @@ export default class ModelDataMapper {
                 return null;
             }
 
-            return fieldSchema.type.fromStorage(storageValue);
-        });
+            return fieldSchema.type.fromStorage(storageValue, container);
+        }));
     }
 }

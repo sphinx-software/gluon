@@ -47,7 +47,7 @@ export default class DatabaseRepository {
         let rawData = await query;
 
         return await Promise.all(rawData.map(async (row) => {
-            let fields = ModelDataMapper.map(row, this.fields);
+            let fields = await ModelDataMapper.map(row, this.fields, this.container);
             let entity = await this.makeEntity();
 
             entity.schema.guardOff();
@@ -76,7 +76,7 @@ export default class DatabaseRepository {
             return defaultDataIfNotExisted;
         }
 
-        let fields = ModelDataMapper.map(row, this.fields);
+        let fields = ModelDataMapper.map(row, this.fields, this.container);
         let entity = await this.makeEntity();
 
         entity.schema.guardOff();
@@ -101,7 +101,7 @@ export default class DatabaseRepository {
             return defaultDataIfNotExisted;
         }
 
-        let fields = ModelDataMapper.map(row, this.fields);
+        let fields = await ModelDataMapper.map(row, this.fields, this.container);
         let entity = await this.makeEntity();
 
         entity.schema.guardOff();
@@ -120,7 +120,7 @@ export default class DatabaseRepository {
         let rawData = await query;
 
         return await Promise.all(rawData.map(async (row) => {
-            let fields = ModelDataMapper.map(row, this.fields);
+            let fields = await ModelDataMapper.map(row, this.fields, this.container);
             let entity = await this.makeEntity();
 
             entity.schema.guardOff();
