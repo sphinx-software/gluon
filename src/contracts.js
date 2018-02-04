@@ -21,7 +21,7 @@ export class DataTypeInterface {
 }
 
 /**
- * @interface
+ * @interface QueryableInterface
  */
 export class QueryableInterface {
 
@@ -34,7 +34,7 @@ export class QueryableInterface {
 
 
 /**
- * @interface
+ * @interface RepositoryInterface
  */
 export class RepositoryInterface {
 

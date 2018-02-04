@@ -1,5 +1,6 @@
 export DateTIme from "./DateTime";
 export Float from "./Float";
+export Hashed from "./Hashed";
 export Integer from "./Integer";
 export Json from "./Json";
 export PrimaryKey from "./PrimaryKey";
