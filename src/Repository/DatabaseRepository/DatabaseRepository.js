@@ -48,13 +48,7 @@ export default class DatabaseRepository {
 
         return await Promise.all(rawData.map(async (row) => {
             let fields = await EntityDataMapper.toEntity(row, this.fields, this.container);
-            let entity = await this.makeEntity();
-
-            entity.schema.guardOff();
-            entity.setFields(fields);
-            entity.schema.guardOn();
-
-            return entity;
+            return await this.makeEntity(fields);
         }));
     }
 
@@ -77,13 +71,7 @@ export default class DatabaseRepository {
         }
 
         let fields = EntityDataMapper.toEntity(row, this.fields, this.container);
-        let entity = await this.makeEntity();
-
-        entity.schema.guardOff();
-        entity.setFields(fields);
-        entity.schema.guardOn();
-
-        return entity;
+        return await this.makeEntity(fields);
     }
 
     /**
@@ -102,13 +90,7 @@ export default class DatabaseRepository {
         }
 
         let fields = await EntityDataMapper.toEntity(row, this.fields, this.container);
-        let entity = await this.makeEntity();
-
-        entity.schema.guardOff();
-        entity.setFields(fields);
-        entity.schema.guardOn();
-
-        return entity;
+        return await this.makeEntity(fields);
     }
 
     /**
@@ -156,11 +138,7 @@ export default class DatabaseRepository {
             this.container
         );
 
-        entity.schema.guardOff();
-        entity.setFields(syncedEntityFields);
-        entity.schema.guardOn();
-
-        return entity;
+        return await this.makeEntity(syncedEntityFields);
     }
 
     /**
@@ -387,12 +365,18 @@ export default class DatabaseRepository {
     // --------------------------------------------------------------------------------------------------------------
 
     /**
-     * Create an entity instance
      *
+     * @param fields
      * @return {Promise<Entity>}
      */
-    async makeEntity() {
-        return EntitySchema.applyFor(await this.container.make(this.Entity));
+    async makeEntity(fields) {
+        let entity = EntitySchema.applyFor(await this.container.make(this.Entity));
+
+        entity.schema.guardOff();
+        entity.setFields(fields);
+        entity.schema.guardOn();
+
+        return entity;
     }
 
     /**
