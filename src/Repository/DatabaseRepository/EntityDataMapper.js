@@ -5,13 +5,12 @@ import lodash from "lodash";
 export default class EntityDataMapper {
 
     /**
-     * Map a row record into the entities form.
-     * Using the field schema.
+     * Map a row record into the entity form
      *
-     * @param row
-     * @param fieldsSchema
-     * @param container
-     * @return {Promise<*>}
+     * @param {{}} row
+     * @param {{}} fieldsSchema
+     * @param {{Container}} container
+     * @return {Promise<Entity>}
      */
     static toEntity(row, fieldsSchema, container) {
 
@@ -31,6 +30,14 @@ export default class EntityDataMapper {
         }));
     }
 
+    /**
+     * Map an entity into a row record
+     *
+     * @param {{}} entityProperties
+     * @param {{}} fieldsSchema
+     * @param {{Container}} container
+     * @return {*}
+     */
     static toDatabaseStorage(entityProperties, fieldsSchema, container) {
 
         let storageData = {};
