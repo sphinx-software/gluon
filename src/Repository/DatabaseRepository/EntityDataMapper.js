@@ -16,11 +16,16 @@ export default class EntityDataMapper {
 
         return Promise.props(lodash.mapValues(fieldsSchema, (fieldSchema, fieldName) => {
 
-            let storageValue =
-                fieldSchema.name.length ?
-                    fieldSchema.name.map(name => row[name]) :
-                    row[NamingConvention.columnName(fieldName)]
-            ;
+            let storageValue = null;
+
+            if (fieldSchema.name.length === 0) {
+                storageValue = row[NamingConvention.columnName(fieldName)];
+            } else if (fieldSchema.name.length === 1) {
+                // Field alias only
+                storageValue = row[NamingConvention.columnName(fieldSchema.name[0])];
+            } else {
+                storageValue = fieldSchema.name.map(name => row[name]);
+            }
 
             if (storageValue === null) {
                 return null;
