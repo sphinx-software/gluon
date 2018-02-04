@@ -42,7 +42,7 @@ export class RepositoryInterface {
      * Find models by a given condition
      *
      * @param condition
-     * @return {Promise<Model[]>}
+     * @return {Promise<Entity[]>}
      */
     async find(condition) { }
 
@@ -50,13 +50,13 @@ export class RepositoryInterface {
      * Get a model by its identifier
      *
      * @param identifier
-     * @return {Promise<Model>}
+     * @return {Promise<Entity>}
      */
     async get(identifier) { }
 
     /**
      * Get all models from this repository
-     * @return {Promise<Model[]>}
+     * @return {Promise<Entity[]>}
      */
     async all() { }
 
@@ -65,14 +65,14 @@ export class RepositoryInterface {
      * returns its instance
      *
      * @param {*} modelProperties
-     * @return {Promise<Model>}
+     * @return {Promise<Entity>}
      */
     async create(modelProperties) { }
 
     /**
      * Save a model into this repository (perform update)
      *
-     * @param {Model} model
+     * @param {Entity} model
      */
     async save(model) { }
 
@@ -81,7 +81,7 @@ export class RepositoryInterface {
      * And return the removed model
      *
      * @param identifier
-     * @return {Promise<Model>}
+     * @return {Promise<Entity>}
      */
     async remove(identifier) { }
 }
