@@ -1,5 +1,5 @@
 import Value from "./Value";
-import {HasherInterface} from "@sphinx-software/fusion/Fusion/ServiceContracts";
+import {HasherInterface} from "Fusion";
 
 /**
  * @implements DataTypeInterface

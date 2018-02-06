@@ -1,8 +1,8 @@
 import lodash from "lodash";
 import NamingConvention from "./NamingConvention";
-import {PrimaryKey, SoftDelete, Timestamps} from "../../DataType";
+import {PrimaryKey, SoftDelete, Timestamps} from "../DataType/index";
 import EntityDataMapper from "./EntityDataMapper";
-import EntitySchema from "../../Entity/EntitySchema";
+import EntitySchema from "../Entity/EntitySchema";
 
 /**
  * @implements RepositoryInterface
@@ -393,7 +393,8 @@ export default class DatabaseRepository {
         this.timestamps = lodash.findKey(this.fields, (fieldMetadata) => fieldMetadata.type === Timestamps);
 
         this.tableName  = Reflect.getMetadata('gluon.repository.database.table', Entity) ||
-            NamingConvention.tableName(Entity.name);
+            NamingConvention.tableName(Entity.name)
+        ;
 
         this.columns    = lodash.flatMap(lodash.values(lodash.mapValues(
             this.fields,

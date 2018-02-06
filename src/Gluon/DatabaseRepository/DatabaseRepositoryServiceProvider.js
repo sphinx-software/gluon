@@ -1,5 +1,5 @@
-import {provider} from "@sphinx-software/fusion/Fusion/Fusion";
-import {DatabaseManagerInterface} from "@sphinx-software/fusion/Fusion/ServiceContracts";
+import {provider} from "Fusion";
+import {DatabaseManagerInterface} from "Fusion";
 
 @provider()
 export default class DatabaseRepositoryServiceProvider {
