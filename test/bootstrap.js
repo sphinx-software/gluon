@@ -41,4 +41,6 @@ describe('Gluon Test Suite', () => {
     });
 
     require('./specs');
+
+    // after(require('why-is-node-running'))
 });

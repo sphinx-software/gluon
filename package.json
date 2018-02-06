@@ -4,8 +4,8 @@
   "description": "A data modeling framework for Fusion.",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/.bin/mocha test/index.js",
-    "build": "node node_modules/.bin/babel src/ -d build/"
+    "test": "node node_modules/.bin/mocha --exit test/index.js",
+    "build": "npm run test && node node_modules/.bin/babel src/ -d build/"
   },
   "author": "rikky <son.levuthai@gmail.com>",
   "license": "ISC",
