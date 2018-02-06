@@ -17,6 +17,10 @@ describe('DatabaseRepository', () => {
 
         it('return null when no entity was found', async () => {
             assert.equal(null, await credentialRepository.get(100))
-        })
+        });
+
+        it('can return default entity when no entity was found', async () => {
+            assert.equal('Foobar', await credentialRepository.get(100, 'Foobar'))
+        });
     })
 });
