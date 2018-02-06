@@ -82,7 +82,11 @@ export default class DatabaseRepository {
      * @return {Promise<Entity>}
      */
     async get(identifier, defaultDataIfNotExisted = null) {
-        let query   = this.makeQuery().select(this.columns).select(this.columns).first();
+        let query   = this.makeQuery().select(this.columns)
+            .select(this.columns)
+            .where(this.identifier, '=', identifier)
+            .first();
+
         let row     = await query;
 
         if (!row) {
