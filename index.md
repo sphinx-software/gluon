@@ -1,37 +1,72 @@
-## Welcome to GitHub Pages
+# Gluon
 
-You can use the [editor on GitHub](https://github.com/sphinx-software/gluon/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+A data modeling framework for Fusion.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+*FYI, nuclear **fusion** is a reaction in which two or more atomic nuclei come close enough to form one or 
+more different atomic nuclei and subatomic particles (neutrons or protons).*
 
-### Markdown
+***gluon** is an elementary particle which bonds those nuclei particles together after **fusion** reaction*
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+---
 
-```markdown
-Syntax highlighted code block
+Let's start with Domain Driven Design basic concepts:
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
+- Entity
+- Value object
+- Aggregation vs Reference
+- Aggregate root
+- Domain context
+- Service layer
+- Repository & Data Mapper
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
+Okay, okay, enough talk! Let's write some codes
 
-[Link](url) and ![Image](src)
+```javascript
+
+@bind()
+export class Credential {
+
+    @type(PrimaryKey)
+    id = 1;
+
+    @type(String)
+    username = '';
+
+    @type(Hashed)
+    password = '';
+    
+    @type(SoftDelete)
+    deletedAt = null;
+    
+    @type(Timestamps, 'created_at', 'updated_at')
+    timestamps = null;
+}
+
+
+@singleton()
+@databaseRepository(Credential)
+export class CredentialRepository extends DatabaseRepository {
+
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+And we are done!
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sphinx-software/gluon/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```javascript
 
-### Support or Contact
+let credentialWithId1 = await credentialRepository.get(1);
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+let newCredential     = await credentialRepository.create({username: 'sexyRikky', password: 'I will not tell ya~!'});
+
+let allOfCredentials  = await credentialRepository.all();
+
+let deletedCredendeitals = await credentialWithId1.onlyTrash().all();
+
+
+/// more and more stuff ;)
+```
+
+OKay. Now, let check this out!
