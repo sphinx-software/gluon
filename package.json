@@ -21,6 +21,7 @@
   "devDependencies": {
     "@sphinx-software/container": "^0.1.13",
     "@sphinx-software/fusion": "^1.3.0",
+    "@sphinx-software/wave-function": "0.0.4",
     "babel-cli": "^6.26.0",
     "babel-plugin-dynamic-import": "^1.0.0",
     "babel-plugin-dynamic-import-node": "^1.2.0",

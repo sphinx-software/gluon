@@ -7,9 +7,10 @@
       "alias": {
         "^Fusion/(.+)": "@sphinx-software/fusion/build/Fusion/\\1",
         "Fusion": "@sphinx-software/fusion/build/Fusion",
+        "WaveFunction": "@sphinx-software/wave-function",
+        "^Tests(.*)": "./test/Tests\\1",
         "Gluon": "./src/Gluon"
       }
     }]
   ]
 }
-
