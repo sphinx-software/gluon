@@ -1,7 +1,7 @@
 /**
- * @interface DataTypeInterface
+ * @interface PrimitiveDataTypeInterface
  */
-export class DataTypeInterface {
+export class PrimitiveDataTypeInterface {
 
     /**
      * Convert data from storage

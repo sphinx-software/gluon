@@ -8,4 +8,4 @@ export SoftDelete from "./SoftDelete";
 export String from "./String";
 export Timestamp from "./Timestamp";
 export Timestamps from "./Timestamps";
-export Value from "./Value";
+export PrimitiveType from "./PrimitiveType";

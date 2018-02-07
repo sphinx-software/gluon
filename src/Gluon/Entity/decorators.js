@@ -24,15 +24,3 @@ export function type(DataType, ...fieldName) {
         return Reflect.defineMetadata('gluon.entity.fields', metadata, target.constructor);
     }
 }
-
-export function aggregation(Entity, fieldName) {
-
-}
-
-export function aggregations(Entity, fieldName) {
-
-}
-
-export function reference(Entity, fieldName) {
-
-}

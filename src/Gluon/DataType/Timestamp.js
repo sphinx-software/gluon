@@ -1,4 +1,4 @@
-import Value from "./Value";
+import PrimitiveType from "./PrimitiveType";
 
 /**
  * @implements DataTypeInterface

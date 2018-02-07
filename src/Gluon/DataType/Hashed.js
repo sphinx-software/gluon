@@ -1,10 +1,10 @@
-import Value from "./Value";
+import PrimitiveType from "./PrimitiveType";
 import {HasherInterface} from "Fusion";
 
 /**
- * @implements DataTypeInterface
+ * @implements PrimitiveDataTypeInterface
  */
-export default class Hashed extends Value {
+export default class Hashed extends PrimitiveType {
     static async fromStorage(storageValue) {
         return storageValue;
     }

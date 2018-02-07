@@ -1,9 +1,9 @@
-import Value from "./Value";
+import PrimitiveType from "./PrimitiveType";
 
 /**
- * @implements DataTypeInterface
+ * @implements PrimitiveDataTypeInterface
  */
-export default class Json extends Value {
+export default class Json extends PrimitiveType {
     static async fromStorage(storageValue) {
         return JSON.parse(storageValue);
     }

@@ -1,9 +1,9 @@
-import Value from "./Value";
+import PrimitiveType from "./PrimitiveType";
 
 /**
- * @implements DataTypeInterface
+ * @implements PrimitiveDataTypeInterface
  */
-export default class SoftDelete extends Value {
+export default class SoftDelete extends PrimitiveType {
     static async fromStorage(storageValue) {
         return new Date(parseInt(storageValue));
     }

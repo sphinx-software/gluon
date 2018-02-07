@@ -1,9 +1,9 @@
-import Value from "./Value";
+import PrimitiveType from "PrimitiveType";
 
 /**
- * @implements DataTypeInterface
+ * @implements PrimitiveDataTypeInterface
  */
-export default class DateTime extends Value {
+export default class DateTime extends PrimitiveType {
     static async fromStorage(storageValue) {
         return new Date(storageValue);
     }

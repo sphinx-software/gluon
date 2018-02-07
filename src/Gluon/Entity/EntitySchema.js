@@ -10,7 +10,7 @@ export default class EntitySchema {
      *
      * @type {boolean}
      */
-    guard = true;
+    guardMode = true;
 
     /**
      * The map of the fields with its type
@@ -49,16 +49,16 @@ export default class EntitySchema {
      * Turn off the guard flag
      *
      */
-    guardOff() {
-        this.guard = false;
+    unguard() {
+        this.guardMode = false;
     }
 
     /**
      * Turn on the guard flag
      *
      */
-    guardOn() {
-        this.guard = true;
+    guard() {
+        this.guardMode = true;
     }
 
     /**
@@ -87,7 +87,7 @@ export default class EntitySchema {
      */
     setFields(entity, fieldValues) {
 
-        if (this.guard) {
+        if (this.guardMode) {
             throw new Error(`E_SCHEMA_GUARD_MODE: Could not mass assign entity fields in guard mode`);
         }
 
@@ -104,7 +104,7 @@ export default class EntitySchema {
      * @return {boolean}
      */
     set(entity, field) {
-        if (this.guard && this.readonlyFields.includes(field)) {
+        if (this.guardMode && this.readonlyFields.includes(field)) {
             throw new Error(`E_SCHEMA_GUARD_MODE: Field [${field}] is readonly`);
         }
 
@@ -124,7 +124,7 @@ export default class EntitySchema {
             return this;
         }
 
-        if (this.guard && this.hiddenFields.includes(field)) {
+        if (this.guardMode && this.hiddenFields.includes(field)) {
             throw new Error(`E_SCHEMA_GUARD_MODE: Field [${field}] is hidden`);
         }
 
