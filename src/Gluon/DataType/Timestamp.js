@@ -3,7 +3,7 @@ import PrimitiveType from "./PrimitiveType";
 /**
  * @implements DataTypeInterface
  */
-export default class Timestamp extends Value {
+export default class Timestamp extends PrimitiveType {
     static async fromStorage(storageValue) {
         return new Date(parseInt(storageValue));
     }

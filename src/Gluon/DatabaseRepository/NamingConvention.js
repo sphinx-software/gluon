@@ -22,4 +22,16 @@ export default class NamingConvention {
     static identifierField() {
         return 'id';
     }
+
+    tableNameFromEntityName(entityName) {
+        return lodash.snakeCase(pluralize(entityName));
+    }
+
+    columnNameFromFieldName(fieldName) {
+        return lodash.snakeCase(fieldName);
+    }
+
+    fkNameFromTableAndIdColumn(table, idColumn) {
+        return table + '_' + idColumn;
+    }
 }

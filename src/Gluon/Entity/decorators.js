@@ -14,7 +14,7 @@ export function readonly() {
     }
 }
 
-export function type(DataType, ...fieldName) {
+export function type(DataType, fieldName) {
     return (target, property) => {
         let metadata = Reflect.getMetadata('gluon.entity.fields', target.constructor) || {};
         metadata[property] = {
@@ -22,5 +22,30 @@ export function type(DataType, ...fieldName) {
             name: fieldName
         };
         return Reflect.defineMetadata('gluon.entity.fields', metadata, target.constructor);
+    }
+}
+
+export function aggregation(Entity, fieldName) {
+    return (target, property) => {
+        let metadata = Reflect.getMetadata('gluon.entity.aggregation', target.constructor) || {};
+        metadata[property] = {
+            entity: Entity,
+            many: false,
+            name: fieldName
+        };
+        return Reflect.defineMetadata('gluon.entity.aggregation', metadata, target.constructor);
+    }
+}
+
+
+export function aggregations(Entity, fieldName) {
+    return (target, property) => {
+        let metadata = Reflect.getMetadata('gluon.entity.aggregation', target.constructor) || {};
+        metadata[property] = {
+            entity: Entity,
+            many: true,
+            name: fieldName
+        };
+        return Reflect.defineMetadata('gluon.entity.aggregation', metadata, target.constructor);
     }
 }
