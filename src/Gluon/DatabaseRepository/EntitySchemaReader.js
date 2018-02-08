@@ -117,12 +117,12 @@ export default class EntitySchemaReader {
             }
 
             let thisPK = this.getPk(Entity);
+            let thatFK = metadata.name || this.namingConvention.fkNameFromTableAndIdColumn(thisEntityTable, thisPK);
 
             return {
                 many  : metadata.many,
-                pk    : thisEntityTable + '.' + thisPK,
-                fk    : aggregatedEntityTable + '.' +
-                            (metadata.name || this.namingConvention.fkNameFromTableAndIdColumn(thisEntityTable, thisPK))
+                pk    : thisEntityTable       + '.' + thisPK,
+                fk    : aggregatedEntityTable + '.' + thatFK
             }
         });
 
