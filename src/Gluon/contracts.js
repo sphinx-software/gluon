@@ -41,22 +41,54 @@ export class RepositoryInterface {
     /**
      * Find models by a given condition
      *
-     * @param condition
-     * @return {Promise<Entity[]>}
+     * @param {QueryableInterface} condition
+     * @return {Promise<[]>}
      */
     async find(condition) { }
+
+    /**
+     *
+     * @param {QueryableInterface} condition
+     * @param errorWhenFail
+     * @return {Promise<void>}
+     */
+    async findOrFail(condition, errorWhenFail = null) { }
+
+    /**
+     * Find a model by a given condition
+     *
+     * @param {QueryableInterface} condition
+     * @return {Promise<{}>}
+     */
+    async first(condition) { }
+
+    /**
+     *
+     * @param {QueryableInterface} condition
+     * @param errorWhenFail
+     * @return {Promise<void>}
+     */
+    async firstOrFail(condition, errorWhenFail = null) { }
 
     /**
      * Get a model by its identifier
      *
      * @param identifier
-     * @return {Promise<Entity>}
+     * @return {Promise<{}>}
      */
     async get(identifier) { }
 
     /**
+     *
+     * @param identifier
+     * @param errorWhenFail
+     * @return {Promise<{}>}
+     */
+    async getOrFail(identifier, errorWhenFail = null) { }
+
+    /**
      * Get all models from this repository
-     * @return {Promise<Entity[]>}
+     * @return {Promise<{}[]>}
      */
     async all() { }
 
@@ -65,14 +97,23 @@ export class RepositoryInterface {
      * returns its instance
      *
      * @param {*} modelProperties
-     * @return {Promise<Entity>}
+     * @return {Promise<{}>}
      */
     async create(modelProperties) { }
 
     /**
+     * Create a new model in this repository, but does
+     * not returns any model
+     *
+     * @param modelProperties
+     * @return {Promise<void>}
+     */
+    async createBlindly(modelProperties) { }
+
+    /**
      * Save a model into this repository (perform update)
      *
-     * @param {Entity} model
+     * @param {{}} model
      */
     async save(model) { }
 
@@ -81,7 +122,16 @@ export class RepositoryInterface {
      * And return the removed model
      *
      * @param identifier
-     * @return {Promise<Entity>}
+     * @return {Promise<{}>}
      */
     async remove(identifier) { }
+
+    /**
+     * Remove a model by its identifier.
+     * And return the removed model
+     *
+     * @param identifier
+     * @return {Promise<{}>}
+     */
+    async removeBlindly(identifier) { }
 }
