@@ -2,14 +2,14 @@ import {testCase, TestSuite} from "WaveFunction";
 import EntitySchemaReader from "Gluon/DatabaseRepository/EntitySchemaReader";
 import NamingConvention from "Gluon/DatabaseRepository/NamingConvention";
 
-import {FooModel, FarModel} from "./entities";
+import {FooModel, FarModel, NoPKModel} from "./entities";
 import {assert} from "chai";
 
 export default class EntitySchemaReaderTestSuite extends TestSuite {
 
 
     @testCase()
-    async testSchemaReaderReadsAnEntityWithoutAggregation() {
+    testSchemaReaderReadsAnEntityWithoutAggregation() {
 
         let schemaReader = new EntitySchemaReader(new NamingConvention());
 
@@ -30,7 +30,7 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
     }
 
     @testCase()
-    async testSchemaReaderReadsAnEntityWithAggregation() {
+    testSchemaReaderReadsAnEntityWithAggregation() {
         let schemaReader = new EntitySchemaReader(new NamingConvention());
 
         let results = schemaReader.read(FarModel);
@@ -67,5 +67,14 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                 { pk: "boo_models.id"      , fk: "hello_world_models.boo_models_id", many: false }
             ]
         })
+    }
+
+    @testCase()
+    testSchemaReaderShouldThrowErrorWhenAggregationOnNoPKEntity() {
+        let schemaReader = new EntitySchemaReader(new NamingConvention());
+
+        assert.throws(() => {
+            schemaReader.read(NoPKModel)
+        }, 'Could not make aggregation for entity [NoPKModel], no [PrimaryKey] field type defined')
     }
 }

@@ -57,3 +57,10 @@ export class FarModel {
     @type(String)
     otherField = '';
 }
+
+
+export class NoPKModel {
+
+    @aggregation(FarModel)
+    aggregationField = null;
+}

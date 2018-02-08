@@ -148,7 +148,7 @@ export default class EntitySchemaReader {
 
         if (!pkFieldKey) {
             throw new Error(`E_SCHEMA_READER: Could not make aggregation for entity [${Entity.name}], ` +
-            'no PrimaryKey field type defined')
+            'no [PrimaryKey] field type defined')
         }
 
         let pkMetadata = Reflect.getMetadata('gluon.entity.fields', Entity)[pkFieldKey];
