@@ -1,73 +1,105 @@
+import lodash from "lodash";
+
 /**
  * @implements RepositoryInterface
  */
 export default class DatabaseRepository {
 
-    writeConnection = null;
+    queryScope = null;
 
-    readConnection  = null;
-
-    async remove(identifier) {
-
-    }
-
-    async create(modelProperties) {
-
-    }
-
-    removeBlindly(identifier) {
-
+    create(modelProperties) {
+        // todo
     }
 
     createBlindly(modelProperties) {
-
+        // todo
     }
 
     save(model) {
-
+        // todo
     }
 
-    find(condition) {
+    remove(identifier) {
+        // todo
+    }
 
+    all() {
+        // todo
     }
 
     get(identifier) {
-
-    }
-
-    async all() {
-        let table = 'table';
-        let query = this.scoper.decorate(this.readConnection.from(table));
-
-        let rawResult  = await query;
-        let entities   = await this.mapper.makeEntities(rawResult);
-
-        return this.processors.process(entities);
-    }
-
-    first(condition) {
-
-    }
-
-    firstOrFail(condition, errorWhenFail) {
-
+        // todo
     }
 
     findOrFail(condition, errorWhenFail) {
+        // todo
+    }
 
+    first(condition) {
+        // todo
+    }
+
+    firstOrFail(condition, errorWhenFail) {
+        // todo
+    }
+
+    removeBlindly(identifier) {
+        // todo
+    }
+
+    find(condition) {
+        // todo
     }
 
     getOrFail(identifier, errorWhenFail) {
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    // query scope methods
+    // -----------------------------------------------------------------------------------------------------------------
+    scope(name, ...parameters) {
 
     }
 
-    setWriteConnection(connection) {
-        this.writeConnection = connection;
+    setQueryScope(queryScope) {
+        this.queryScope = queryScope;
         return this;
     }
 
-    setReadConnection(connection) {
-        this.readConnection = connection;
+    withScope(scopeName, ...scopeParameters) {
+
+    }
+
+    bootstrap() {
+        this.bootstrapQueryScope();
         return this;
+    }
+
+    bootstrapQueryScope() {
+        // todo
+        this.queryScope.getScopes()
+            .map(scopeName => {
+                let willBeMethodName = 'with' + lodash.upperFirst(lodash.camelCase(scopeName));
+
+                // Check for property existence.
+                if (Reflect.has(this, willBeMethodName)) {
+                    throw new Error(
+                        `E_QUERY_SCOPE_METHOD: Could not make new alias function for the query scope [${scopeName}]. `
+                        + `Property [${willBeMethodName}] is already defined`
+                    );
+                }
+
+                return {
+                    scopeName  : scopeName,
+                    methodName : willBeMethodName
+                }
+            })
+            .forEach(willBeDecoratedMethods => {
+
+                Reflect.defineProperty(this, willBeDecoratedMethods.methodName, {
+                    value: (...parameter) => this.withScope(willBeDecoratedMethods.scopeName, ...parameter)
+                })
+            })
+        ;
     }
 }

@@ -45,6 +45,12 @@ export default class QueryScope {
         return new QueryContext(contextDescriber);
     }
 
+    getScopes() {
+        return lodash.keys(this.positiveScopes)
+            .concat(lodash.keys(this.negativeScopes))
+        ;
+    }
+
     unless(scopeName, scopeExecutor) {
         this.negativeScopes[scopeName] = scopeExecutor;
         return this;

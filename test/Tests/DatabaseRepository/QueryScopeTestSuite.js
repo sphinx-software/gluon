@@ -6,6 +6,17 @@ import QueryScope from "../../../src/Gluon/DatabaseRepository/QueryScope/QuerySc
 export default class QueryScopeTestSuite extends TestSuite {
 
     @testCase()
+    testQueryScopeGetAllRegisteredScopes() {
+        let queryScope = new QueryScope();
+
+        queryScope.when('foo', () => {});
+        queryScope.unless('bar', () => {});
+        queryScope.always(() => {});
+
+        assert.deepEqual(queryScope.getScopes(), ['foo', 'bar']);
+    }
+
+    @testCase()
     testQueryScopeMakesAQueryContextWithPositiveScopes() {
         let queryScope = new QueryScope();
         let fooScope = sinon.spy();

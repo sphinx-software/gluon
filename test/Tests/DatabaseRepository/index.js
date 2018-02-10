@@ -1,4 +1,7 @@
 export QueryScopeTestSuite from "./QueryScopeTestSuite";
-export EntitySchemaReaderTestSuite from "./EntitySchemaReaderTestSuite";
-export DatabaseRepositoryQueryTestSuite from "./DatabaseRepositoryQueryTestSuite";
+
 export QueryContextTestSuite from "./QueryContextTestSuite";
+
+export DatabaseRepositoryQueryTestSuite from "./DatabaseRepositoryQueryScopeTestSuite";
+
+export EntitySchemaReaderTestSuite from "./EntitySchemaReaderTestSuite";
