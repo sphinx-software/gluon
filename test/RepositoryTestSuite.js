@@ -1,6 +1,5 @@
 import {FusionTestSuite} from "WaveFunction";
 
-import * as CredentialPackage from "Tests/Credential";
 import * as GluonPackage from "Gluon";
 import * as DatabasePackage from "Fusion/Database";
 import * as MetaInjectorPackage from "Fusion/MetaInjector";
@@ -10,7 +9,7 @@ export default class RepositoryTestSuite extends FusionTestSuite {
 
     manifest() {
 
-        return {...MetaInjectorPackage, ...CredentialPackage, ...DatabasePackage, ...GluonPackage};
+        return {...MetaInjectorPackage, ...DatabasePackage, ...GluonPackage};
     }
 
     config() {

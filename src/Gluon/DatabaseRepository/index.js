@@ -1,3 +1,3 @@
+export QueryProcessor from "./QueryScope/QueryScope";
 export DatabaseRepository from "./DatabaseRepository";
 export NamingConvention from "./NamingConvention";
-export DatabaseRepositoryServiceProvider from "./DatabaseRepositoryServiceProvider";

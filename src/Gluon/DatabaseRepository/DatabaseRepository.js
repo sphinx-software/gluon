@@ -7,9 +7,8 @@ export default class DatabaseRepository {
 
     readConnection  = null;
 
-    responseProcessors = [];
-
     async remove(identifier) {
+
     }
 
     async create(modelProperties) {
@@ -36,8 +35,14 @@ export default class DatabaseRepository {
 
     }
 
-    all() {
+    async all() {
+        let table = 'table';
+        let query = this.scoper.decorate(this.readConnection.from(table));
 
+        let rawResult  = await query;
+        let entities   = await this.mapper.makeEntities(rawResult);
+
+        return this.processors.process(entities);
     }
 
     first(condition) {
@@ -56,16 +61,6 @@ export default class DatabaseRepository {
 
     }
 
-    registerQueryScope(name, queryScope, useAsDefaultScope = false) {
-        this.queryScopes[name] = queryScope;
-        return this;
-    }
-
-    registerResponseProcessor(processor) {
-        this.responseProcessors.push(processor);
-        return this;
-    }
-
     setWriteConnection(connection) {
         this.writeConnection = connection;
         return this;
@@ -74,33 +69,5 @@ export default class DatabaseRepository {
     setReadConnection(connection) {
         this.readConnection = connection;
         return this;
-    }
-
-    /**
-     *
-     * @param {QueryScopeSyntax} queryScopeSyntax
-     */
-    scope(queryScopeSyntax) {
-
-    }
-
-    static read(connectionName) {
-
-    }
-
-    static write(connectionName) {
-
-    }
-
-    static connection() {
-
-    }
-
-    static databaseRepository(Model) {
-
-    }
-
-    static table() {
-
     }
 }

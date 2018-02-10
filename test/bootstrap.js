@@ -1,5 +1,5 @@
 import {Runner, Formatter} from "WaveFunction";
-import * as testSuites from "Tests";
+import * as testSuites from "Tests/DatabaseRepository/index";
 
 
 let runner = new Runner();
