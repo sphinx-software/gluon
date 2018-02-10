@@ -81,4 +81,52 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
 
         withScopeStub.restore();
     }
+
+    @testCase()
+    testTheRepositoryAppliesQueryScopesToItsQueryProcedure() {
+        let queryScope     = new QueryScope();
+        let contextStub    = sinon.stub(queryScope, 'context');
+
+
+        this.repository
+            .setQueryScope(queryScope)
+            .bootstrap()
+        ;
+        this.repository
+            .withScope('foo', 'fooParameter1', 'fooParameter2')
+            .withScope('bar', 'barParameter1', 'barParameter2')
+            .makeQueryContext()
+        ;
+
+        assert(contextStub.calledWith([
+            {scope: 'foo', parameters: ['fooParameter1', 'fooParameter2']},
+            {scope: 'bar', parameters: ['barParameter1', 'barParameter2']}
+        ]));
+    }
+
+    @testCase()
+    testTheRepositoryAppliesQueryScopesDoesNotCausingRaceCondition() {
+        let queryScope     = new QueryScope();
+        let contextStub    = sinon.stub(queryScope, 'context');
+
+
+        this.repository
+            .setQueryScope(queryScope)
+            .bootstrap()
+        ;
+
+        this.repository
+            .withScope('bar', 'barParameter1', 'barParameter2')
+            .makeQueryContext()
+        ;
+
+        this.repository
+            .withScope('foo', 'fooParameter1', 'fooParameter2')
+            .makeQueryContext()
+        ;
+
+        assert(contextStub.secondCall.calledWith([
+            {scope: 'foo', parameters: ['fooParameter1', 'fooParameter2']}
+        ]), 'Woo hoo, it\'s making race condition!');
+    }
 }

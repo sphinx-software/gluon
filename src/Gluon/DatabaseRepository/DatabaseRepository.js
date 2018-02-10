@@ -5,7 +5,9 @@ import lodash from "lodash";
  */
 export default class DatabaseRepository {
 
-    queryScope = null;
+    queryScope  = null;
+
+    usingScopes = [];
 
     create(modelProperties) {
         // todo
@@ -57,17 +59,14 @@ export default class DatabaseRepository {
     // -----------------------------------------------------------------------------------------------------------------
     // query scope methods
     // -----------------------------------------------------------------------------------------------------------------
-    scope(name, ...parameters) {
-
-    }
-
     setQueryScope(queryScope) {
         this.queryScope = queryScope;
         return this;
     }
 
     withScope(scopeName, ...scopeParameters) {
-
+        this.usingScopes.push({scope: scopeName, parameters: scopeParameters});
+        return this;
     }
 
     bootstrap() {
@@ -100,5 +99,11 @@ export default class DatabaseRepository {
                 })
             })
         ;
+    }
+
+    makeQueryContext() {
+        let context = this.queryScope.context(this.usingScopes);
+        this.usingScopes = [];
+        return context;
     }
 }
