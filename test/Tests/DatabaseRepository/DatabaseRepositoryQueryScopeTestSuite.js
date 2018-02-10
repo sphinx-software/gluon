@@ -15,7 +15,7 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
         let queryScope     = new QueryScope();
         let getScopesStub  = sinon.stub(queryScope, 'getScopes');
 
-        getScopesStub.onCall(0).returns(['foo', 'some foo', 'some-bar', 'Some   baz']);
+        getScopesStub.returns(['foo', 'some foo', 'some-bar', 'Some   baz']);
 
         this.repository
             .setQueryScope(queryScope)
@@ -29,6 +29,15 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
 
         let withScopeStub = sinon.stub(this.repository, 'withScope');
 
+        withScopeStub.returns(this.repository);
+
+        this.repository.withFoo('fooParameter').withSomeFoo('someFooParameter').withSomeBar('someBarParameter').withSomeBaz('someBazParameter', 'someBazParameter2');
+
+        assert(withScopeStub.calledWith('foo', 'fooParameter'));
+        assert(withScopeStub.calledWith('some foo', 'someFooParameter'));
+        assert(withScopeStub.calledWith('some-bar', 'someBarParameter'));
+        assert(withScopeStub.calledWith('Some   baz', 'someBazParameter', 'someBazParameter2'));
+
         withScopeStub.restore();
     }
 
@@ -37,7 +46,7 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
         let queryScope     = new QueryScope();
         let getScopesStub  = sinon.stub(queryScope, 'getScopes');
 
-        getScopesStub.onCall(0).returns(['foo']);
+        getScopesStub.returns(['foo']);
 
         Reflect.defineProperty(this.repository, 'withFoo', {value: 'any thing'});
 
@@ -57,7 +66,7 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
         let getScopesStub  = sinon.stub(queryScope, 'getScopes');
         let withScopeStub  = sinon.stub(this.repository, 'withScope');
 
-        getScopesStub.onCall(0).returns(['foo-bar', 'foo  bar']);
+        getScopesStub.returns(['foo-bar', 'foo  bar']);
 
         this.repository
             .setQueryScope(queryScope)
@@ -69,5 +78,7 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
         this.repository.withFooBar('hello', 'world');
 
         assert(withScopeStub.calledWith('foo-bar', 'hello', 'world'));
+
+        withScopeStub.restore();
     }
 }

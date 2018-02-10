@@ -76,7 +76,6 @@ export default class DatabaseRepository {
     }
 
     bootstrapQueryScope() {
-        // todo
         this.queryScope.getScopes()
             .map(scopeName => {
                 let willBeMethodName = 'with' + lodash.upperFirst(lodash.camelCase(scopeName));
