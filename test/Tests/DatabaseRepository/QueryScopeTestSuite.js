@@ -1,5 +1,6 @@
 import {TestSuite, testCase} from "WaveFunction";
 import sinon from "sinon";
+// noinspection ES6CheckImport
 import {assert} from "chai";
 import QueryScope from "../../../src/Gluon/DatabaseRepository/QueryScope/QueryScope";
 
@@ -43,7 +44,7 @@ export default class QueryScopeTestSuite extends TestSuite {
     }
 
     @testCase()
-    testQueryScopeMakeAContextWithDefaultScopes() {
+    testQueryScopeMakesAContextWithDefaultScopes() {
         let queryScope   = new QueryScope();
         let defaultScope = sinon.spy();
 
@@ -80,7 +81,7 @@ export default class QueryScopeTestSuite extends TestSuite {
 
 
     @testCase()
-    testQueryScopeMakeAContextWithNegativeScopes() {
+    testQueryScopeMakesAContextWithNegativeScopes() {
         let queryScope    = new QueryScope();
         let fooScope      = sinon.spy();
         let barScope      = sinon.spy();

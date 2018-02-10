@@ -6,7 +6,7 @@ import {assert} from 'chai';
 
 export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
 
-    beforeEach(context) {
+    async beforeEach(context) {
         this.repository = new DatabaseRepository();
     }
 
