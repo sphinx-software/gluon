@@ -7,22 +7,6 @@ import pluralize from 'pluralize';
  */
 export default class NamingConvention {
 
-    static tableName(modelName) {
-        return lodash.snakeCase(pluralize(modelName)).toLowerCase();
-    }
-
-    static columnName(modelField) {
-        return lodash.snakeCase(modelField);
-    }
-
-    static fieldName(columnName) {
-        return lodash.camelCase(columnName);
-    }
-
-    static identifierField() {
-        return 'id';
-    }
-
     tableNameFromEntityName(entityName) {
         return lodash.snakeCase(pluralize(entityName));
     }

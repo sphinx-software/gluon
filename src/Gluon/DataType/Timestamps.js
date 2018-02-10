@@ -8,4 +8,11 @@ export default class Timestamps {
 
     @type(Timestamp)
     updatedAt = null;
+
+    toJson() {
+        return {
+            createdAt: this.createdAt.getTime(),
+            updatedAt: this.updatedAt.getTime()
+        }
+    }
 }

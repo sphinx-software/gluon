@@ -1,14 +1,11 @@
-import PrimitiveType from "./PrimitiveType";
+import {type} from "../Entity";
+import Timestamp from "./Timestamp";
 
-/**
- * @implements PrimitiveDataTypeInterface
- */
-export default class SoftDelete extends PrimitiveType {
-    static async fromStorage(storageValue) {
-        return new Date(parseInt(storageValue));
-    }
+export default class SoftDelete {
+    @type(Timestamp)
+    deletedAt = new Date();
 
-    static async toStorage(modelValue) {
-        return modelValue.getTime();
+    toJson() {
+        return this.deletedAt.getTime();
     }
 }

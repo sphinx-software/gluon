@@ -64,7 +64,7 @@ export default class EntitySchema {
     /**
      * Jsonify the entity
      *
-     * @param {Entity} entity
+     * @param {*} entity
      */
     toJson(entity) {
         return lodash.mapValues(
@@ -99,7 +99,7 @@ export default class EntitySchema {
     /**
      * Set trap
      *
-     * @param {Entity} entity
+     * @param {*} entity
      * @param {string} field
      * @return {boolean}
      */
@@ -114,7 +114,7 @@ export default class EntitySchema {
     /**
      * Get trap
      *
-     * @param {Entity} entity
+     * @param {*} entity
      * @param {string} field
      * @return {*}
      */
@@ -156,8 +156,8 @@ export default class EntitySchema {
     /**
      * Apply this proxy to the entity instance
      *
-     * @param {Entity} entity
-     * @return {Entity}
+     * @param {*} entity
+     * @return {*}
      */
     static applyFor(entity) {
         return new Proxy(entity, new EntitySchema(...EntitySchema.inspect(entity.constructor)));
