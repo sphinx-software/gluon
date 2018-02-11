@@ -2,25 +2,25 @@ import {type, String, PrimaryKey, Json, Hashed, Timestamps, SoftDelete, aggregat
 
 export class BarModel {
     @type(Json)
-    jsonField = '{"foo": "bar"}';
+    jsonField;
 
     @type(Hashed)
-    hashedField = 'hashed';
+    hashedField;
 }
 
 export class FooModel {
 
     @type(PrimaryKey)
-    idField = 1;
+    idField;
 
     @type(BarModel)
-    modelField = new BarModel();
+    modelField;
 
     @type(String)
-    stringField = 'String';
+    stringField;
 
     @type(Timestamps)
-    timestampField = new Timestamps();
+    timestampField;
 }
 
 export class HelloWorldModel {
@@ -30,37 +30,37 @@ export class HelloWorldModel {
 
 export class BooModel {
     @type(PrimaryKey)
-    id = 1;
+    id;
 
     @aggregation(HelloWorldModel)
-    helloWorldModel = new HelloWorldModel();
+    helloWorldModel;
 
 
     @type(SoftDelete)
-    deletedAt = 0;
+    deletedAt;
 }
 
 export class FarModel {
 
     @type(PrimaryKey)
-    idField = 1;
+    idField;
 
     @aggregations(FooModel)
-    fooModel = new FooModel();
+    fooModel;
 
     @aggregation(BooModel, 'some_fk_field')
-    booModel = new BooModel();
+    booModel;
 
     @type(Timestamps)
-    timestampField = new Timestamps();
+    timestampField;
 
     @type(String)
-    otherField = '';
+    otherField;
 }
 
 
 export class NoPKModel {
 
     @aggregation(FarModel)
-    aggregationField = null;
+    aggregationField;
 }

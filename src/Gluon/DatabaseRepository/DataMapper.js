@@ -15,6 +15,14 @@ export default class DataMapper {
         this.container        = container;
     }
 
+    /**
+     *
+     *
+     * @param columnName
+     * @param databaseRow
+     * @param Type
+     * @return {Promise<*>}
+     */
     async mapPrimitiveValues(columnName, databaseRow, Type) {
         if(lodash.isUndefined(databaseRow[columnName])) {
             throw new Error(`E_DATA_MAPPER: Invalid row result passed to data mapper. ` +
@@ -26,22 +34,15 @@ export default class DataMapper {
         return Type.fromStorage(databaseRow[columnName]);
     }
 
-    async mapModel(databaseRow, Model) {
+    /**
+     *
+     *
+     * @param modelProperties
+     * @param Model
+     * @return {Promise<*>}
+     */
+    async factoryModel(modelProperties, Model) {
         let model = await this.container.make(Model);
-
-        let schemaInspection = EntitySchema.inspect(Model);
-
-        let modelProperties = await Promise.props(lodash.mapValues(schemaInspection[0], (fieldDescription, fieldName) =>
-            fieldDescription.type.prototype instanceof PrimitiveType ?
-                // If the type of the field is an inheritance of PrimitiveType
-                this.mapPrimitiveValues(
-                    fieldDescription.name ||
-                    this.namingConvention.columnNameFromFieldName(fieldName), databaseRow,fieldDescription.type
-
-                    // otherwise, we'll remap the type as an model
-                ) : this.mapModel(databaseRow, fieldDescription.type)
-        ));
-
         let proxiedModel = EntitySchema.applyFor(model);
 
         proxiedModel.schema.unguard();
@@ -49,6 +50,27 @@ export default class DataMapper {
         proxiedModel.schema.guard();
 
         return proxiedModel;
+    }
+
+    /**
+     *
+     * @param databaseRow
+     * @param Model
+     * @return {Promise<*>}
+     */
+    async mapModel(databaseRow, Model) {
+
+        let schemaInspection = EntitySchema.inspect(Model);
+        let modelProperties  = await Promise.props(lodash.mapValues(schemaInspection[0], (fieldDescription, fieldName) =>
+            fieldDescription.type.prototype instanceof PrimitiveType ?
+                // If the type of the field is an inheritance of PrimitiveType
+                this.mapPrimitiveValues( fieldDescription.name ||
+                    this.namingConvention.columnNameFromFieldName(fieldName), databaseRow,fieldDescription.type) :
+                // otherwise, we'll remap the type as an model
+                this.mapModel(databaseRow, fieldDescription.type)
+        ));
+
+        return await this.factoryModel(modelProperties, Model);
     }
 
     async mapDatabase(model) {
