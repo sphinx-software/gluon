@@ -18,16 +18,17 @@ export default class DataMapper {
     /**
      *
      *
+     * @param fieldName
      * @param columnName
      * @param databaseRow
      * @param Type
      * @return {Promise<*>}
      */
-    async mapPrimitiveValues(columnName, databaseRow, Type) {
+    async mapPrimitiveValues(fieldName, columnName, databaseRow, Type) {
         if(lodash.isUndefined(databaseRow[columnName])) {
             throw new Error(`E_DATA_MAPPER: Invalid row result passed to data mapper. ` +
                 `Could not map field [${fieldName}] of model [${EntitySchema.name}], ` +
-                `row result from database does not have field [${columnName}]`
+                `row result from database does not have column [${columnName}]`
             );
 
         }
@@ -61,19 +62,20 @@ export default class DataMapper {
     async mapModel(databaseRow, Model) {
 
         let schemaInspection = EntitySchema.inspect(Model);
-        let modelProperties  = await Promise.props(lodash.mapValues(schemaInspection[0], (fieldDescription, fieldName) =>
-            fieldDescription.type.prototype instanceof PrimitiveType ?
-                // If the type of the field is an inheritance of PrimitiveType
-                this.mapPrimitiveValues( fieldDescription.name ||
-                    this.namingConvention.columnNameFromFieldName(fieldName), databaseRow,fieldDescription.type) :
-                // otherwise, we'll remap the type as an model
-                this.mapModel(databaseRow, fieldDescription.type)
+        let modelProperties  = await Promise.props(
+            lodash.mapValues(schemaInspection[0], (fieldDescription, fieldName) => {
+
+                let columnName = fieldDescription.name ||
+                    this.namingConvention.columnNameFromFieldName(fieldName);
+
+                return fieldDescription.type.prototype instanceof PrimitiveType ?
+                    // If the type of the field is an inheritance of PrimitiveType
+                    this.mapPrimitiveValues(fieldName, columnName, databaseRow, fieldDescription.type) :
+                    // otherwise, we'll remap the type as an model
+                    this.mapModel(databaseRow, fieldDescription.type);
+            }
         ));
 
         return await this.factoryModel(modelProperties, Model);
-    }
-
-    async mapDatabase(model) {
-
     }
 }
