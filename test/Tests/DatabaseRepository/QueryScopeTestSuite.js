@@ -1,6 +1,5 @@
 import {TestSuite, testCase} from "WaveFunction";
 import sinon from "sinon";
-// noinspection ES6CheckImport
 import {assert} from "chai";
 import QueryScope from "../../../src/Gluon/DatabaseRepository/QueryScope/QueryScope";
 

@@ -1,3 +1,7 @@
+export DataMapperTestSuite from "./DataMapperTestSuite";
+
+export DatabaseRepositoryQueryMethodsTestSuite from "./DatabaseRepositoryQueryMethodsTestSuite";
+
 export QueryScopeTestSuite from "./QueryScopeTestSuite";
 
 export QueryContextTestSuite from "./QueryContextTestSuite";
