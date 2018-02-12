@@ -2,89 +2,33 @@ import lodash from "lodash";
 import {PrimitiveType, PrimaryKey} from "Gluon";
 
 export default class ModelQueryBuilder {
-    constructor(namingConvention) {
-        this.namingConvention = namingConvention;
+
+    constructor(modelSchemaReader) {
+        this.reader = modelSchemaReader;
     }
 
     makeSelect(Model, query) {
-        query.from(this.guessTableName(Model));
 
-        return this.makeSelectWithoutFrom(Model, query);
-    }
-
-    makeSelectWithoutFrom(Model, query) {
-        let tableName = this.guessTableName(Model);
-
-        let eagers = lodash.pick(
-            Reflect.getMetadata('gluon.entity.aggregation', Model) || {},
-            Reflect.getMetadata('gluon.entity.eager', Model) || []
-        );
-
-        let thisBuilder = this;
-
-        lodash.forIn(eagers, (eagerLoadAggregation) => {
-            let pk = this.getPk(Model);
-            let fk = this.guessTableName(eagerLoadAggregation.entity) + '.' +
-                (eagerLoadAggregation.name || this.namingConvention.fkNameFromTableAndIdColumn(tableName, pk));
-
-            this.makeSelectWithoutFrom(eagerLoadAggregation.entity, query);
-
-            query.join(this.guessTableName(eagerLoadAggregation.entity), function () {
-                this.on(tableName + '.' + thisBuilder.getPk(Model), '=', fk);
-            });
-        });
-
-
-        query.select(this.getFields(Model).map(fieldName => tableName + '.' + fieldName));
-
-        return query;
-    }
-
-    /**
-     * Get the primary key column name
-     *
-     * @param Model
-     * @return {*}
-     */
-    getPk(Model) {
-        let pkFieldKey =
-            lodash.findKey(
-                Reflect.getMetadata('gluon.entity.fields', Model),
-                metadata => metadata.type === PrimaryKey
-            );
-
-        if (!pkFieldKey) {
+        let modelSchema = this.reader.read(Model);
+        if (!modelSchema.primaryKey) {
             throw new Error(`E_SCHEMA_READER: Could not make aggregation for entity [${Model.name}], ` +
                 'no [PrimaryKey] field type defined')
         }
 
-        let pkMetadata = Reflect.getMetadata('gluon.entity.fields', Model)[pkFieldKey];
+        this.makeSelectWithoutFrom(modelSchema, query);
 
-        return pkMetadata.name || this.namingConvention.columnNameFromFieldName(pkFieldKey);
+        query.from(modelSchema.table);
     }
 
-    getFields(Model) {
-        let fields = [];
+    makeSelectWithoutFrom(modelSchema, query) {
+        query.select(lodash.keys(modelSchema.fields));
 
-        lodash.forIn(
-            Reflect.getMetadata('gluon.entity.fields', Model),
-            (metaDescription, fieldName) => {
-                if (!(metaDescription.type.prototype instanceof PrimitiveType)) {
-                    fields = fields.concat(this.getFields(metaDescription.type));
-                } else if (!metaDescription.name) {
-                    fields.push(this.namingConvention.columnNameFromFieldName(fieldName));
-                } else {
-                    fields.push(lodash.snakeCase(metaDescription.name));
-                }
-            }
-        );
-
-        return fields;
-    }
-
-    guessTableName(Model) {
-        return Reflect.getMetadata('gluon.entity', Model) ||
-            this.namingConvention.tableNameFromEntityName(Model.name)
-        ;
+        lodash.forIn(modelSchema.eagerAggregations, (aggregation) => {
+            let aggregatedModelSchema = this.reader.read(aggregation.entity);
+            this.makeSelectWithoutFrom(aggregatedModelSchema, query);
+            query.join(aggregatedModelSchema.table, function () {
+                this.on(modelSchema.primaryKey, '=', aggregatedModelSchema.table + '.' + aggregation.foreignKey);
+            });
+        });
     }
 }
