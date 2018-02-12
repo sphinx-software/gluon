@@ -82,8 +82,6 @@ export class AggregatedModel {
     someField;
 }
 
-const expectedSql = 'select `models`.`id_field`, `models`.`created_at`, `models`.`updated_at`, `models`.`string_field`, `models`.`json_field`, `models`.`hashed_field`, `deep_aggregated_models`.`some_id_field`, `deep_aggregated_models`.`created_at`, `deep_aggregated_models`.`updated_at`, `other_models`.`my_pk_field`, `other_models`.`created_at`, `other_models`.`updated_at`, `customized_aggregated_models`.`id_field`, `customized_aggregated_models`.`some_field` from `customized_aggregated_models` inner join `models` on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` inner join `deep_aggregated_models` on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` inner join `other_models` on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`'
-
 export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
 
     async fusionActivated() {
@@ -94,8 +92,7 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
     @testCase()
     testQueryBuilderMakeSelectQueryWithoutAggregation() {
 
-        let query = this.connection.query().from(this.modelQueryBuilder.guessTableName(Model));
-
+        let query     = this.connection.query();
         let selectSpy = sinon.stub(query, 'select').returns(query);
 
         this.modelQueryBuilder.makeSelect(Model, query);
@@ -109,11 +106,29 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
     @testCase()
     testQueryBuilderMakeSelectQueryWithAggregation() {
 
-        let query = this.connection.query().from(this.modelQueryBuilder.guessTableName(AggregatedModel));
+        let query = this.connection.query();
 
         this.modelQueryBuilder.makeSelect(AggregatedModel, query);
 
         let sql = query.toSQL();
+
+        // It's too complicated to make assertions on stubs
+        // So we'll make the raw SQL here and test if
+        // the query is built properly.
+
+        let expectedSql = 'select ' +
+            '`models`.`id_field`, `models`.`created_at`, `models`.`updated_at`, `models`.`string_field`, ' +
+            '`models`.`json_field`, `models`.`hashed_field`, `deep_aggregated_models`.`some_id_field`, ' +
+            '`deep_aggregated_models`.`created_at`, `deep_aggregated_models`.`updated_at`, `other_models`.`my_pk_field`, ' +
+            '`other_models`.`created_at`, `other_models`.`updated_at`, `customized_aggregated_models`.`id_field`, ' +
+            '`customized_aggregated_models`.`some_field` ' +
+            'from `customized_aggregated_models` inner join `models` ' +
+            'on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` ' +
+            'inner join `deep_aggregated_models` ' +
+            'on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` ' +
+            'inner join `other_models` ' +
+            'on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`'
+        ;
 
         assert.equal(sql.sql, expectedSql);
     }

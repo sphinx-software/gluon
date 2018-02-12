@@ -7,25 +7,30 @@ export default class ModelQueryBuilder {
     }
 
     makeSelect(Model, query) {
-        let tableName = this.guessTableName(Model);
+        query.from(this.guessTableName(Model));
 
+        return this.makeSelectWithoutFrom(Model, query);
+    }
+
+    makeSelectWithoutFrom(Model, query) {
+        let tableName = this.guessTableName(Model);
 
         let eagers = lodash.pick(
             Reflect.getMetadata('gluon.entity.aggregation', Model) || {},
             Reflect.getMetadata('gluon.entity.eager', Model) || []
         );
 
-        let thisbuilder = this;
+        let thisBuilder = this;
 
         lodash.forIn(eagers, (eagerLoadAggregation) => {
             let pk = this.getPk(Model);
             let fk = this.guessTableName(eagerLoadAggregation.entity) + '.' +
                 (eagerLoadAggregation.name || this.namingConvention.fkNameFromTableAndIdColumn(tableName, pk));
 
-            this.makeSelect(eagerLoadAggregation.entity, query);
+            this.makeSelectWithoutFrom(eagerLoadAggregation.entity, query);
 
             query.join(this.guessTableName(eagerLoadAggregation.entity), function () {
-                this.on(tableName + '.' + thisbuilder.getPk(Model), '=', fk);
+                this.on(tableName + '.' + thisBuilder.getPk(Model), '=', fk);
             });
         });
 

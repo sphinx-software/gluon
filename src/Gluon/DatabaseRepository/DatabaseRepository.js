@@ -17,6 +17,8 @@ export default class DatabaseRepository {
 
     Model           = null;
 
+    modelQueryBuilder = null;
+
     // -----------------------------------------------------------------------------------------------------------------
     // implementation methods
     // -----------------------------------------------------------------------------------------------------------------
@@ -151,13 +153,8 @@ export default class DatabaseRepository {
     // Model methods
     // -----------------------------------------------------------------------------------------------------------------
 
-    /**
-     *
-     * @param schemaReader
-     * @return {DatabaseRepository}
-     */
-    setSchemaReader(schemaReader) {
-        this.schemaReader = schemaReader;
+    setModelQueryBuilder(modelQueryBuilder) {
+        this.modelQueryBuilder = modelQueryBuilder;
 
         return this;
     }
