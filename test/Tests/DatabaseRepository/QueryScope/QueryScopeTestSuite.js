@@ -1,7 +1,7 @@
 import {TestSuite, testCase} from "WaveFunction";
 import sinon from "sinon";
 import {assert} from "chai";
-import QueryScope from "../../../src/Gluon/DatabaseRepository/QueryScope/QueryScope";
+import QueryScope from "../../../../src/Gluon/DatabaseRepository/QueryScope/QueryScope";
 
 export default class QueryScopeTestSuite extends TestSuite {
 

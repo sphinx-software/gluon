@@ -2,8 +2,7 @@ import lodash from 'lodash';
 import pluralize from 'pluralize';
 
 /**
- * Utility for convert the model metadata to the database
- * Using naming convention
+ * Utility for converting the model metadata to the database related items
  */
 export default class NamingConvention {
 

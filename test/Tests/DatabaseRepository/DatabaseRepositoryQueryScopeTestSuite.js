@@ -95,7 +95,7 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
         this.repository
             .withScope('foo', 'fooParameter1', 'fooParameter2')
             .withScope('bar', 'barParameter1', 'barParameter2')
-            .makeQueryContext()
+            .makeQueryScopeContext()
         ;
 
         assert(contextStub.calledWith([
@@ -117,12 +117,12 @@ export default class DatabaseRepositoryQueryScopeTestSuite extends TestSuite {
 
         this.repository
             .withScope('bar', 'barParameter1', 'barParameter2')
-            .makeQueryContext()
+            .makeQueryScopeContext()
         ;
 
         this.repository
             .withScope('foo', 'fooParameter1', 'fooParameter2')
-            .makeQueryContext()
+            .makeQueryScopeContext()
         ;
 
         assert(contextStub.secondCall.calledWith([

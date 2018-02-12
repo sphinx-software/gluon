@@ -37,7 +37,6 @@ export function aggregation(Entity, fieldName) {
     }
 }
 
-
 export function aggregations(Entity, fieldName) {
     return (target, property) => {
         let metadata = Reflect.getMetadata('gluon.entity.aggregation', target.constructor) || {};
@@ -48,4 +47,16 @@ export function aggregations(Entity, fieldName) {
         };
         return Reflect.defineMetadata('gluon.entity.aggregation', metadata, target.constructor);
     }
+}
+
+export function eager() {
+    return (target, property) => {
+        let metadata = Reflect.getMetadata('gluon.entity.eager', target.constructor) || [];
+        metadata.push(property);
+        return Reflect.defineMetadata('gluon.entity.eager', metadata, target.constructor);
+    }
+}
+
+export function model(storage) {
+    return Reflect.metadata('gluon.entity', storage);
 }
