@@ -43,23 +43,14 @@ export default class DatabaseRepository {
         // todo
     }
 
-    get(identifier) {
+    async get(identifier) {
+        let query = this.readConnection.query();
+        this.modelQueryBuilder.makeSelect(this.Model, query);
 
+        let schema = this.schemaReader
     }
 
-    findOrFail(condition, errorWhenFail) {
-        // todo
-    }
-
-    first(condition) {
-        // todo
-    }
-
-    firstOrFail(condition, errorWhenFail) {
-        // todo
-    }
-
-    removeBlindly(identifier) {
+    getOrFail(identifier, errorWhenFail) {
         // todo
     }
 
@@ -67,7 +58,19 @@ export default class DatabaseRepository {
         // todo
     }
 
-    getOrFail(identifier, errorWhenFail) {
+    findOrFail(condition, errorWhenFail) {
+        // todo
+    }
+
+    first(condition) {
+
+    }
+
+    firstOrFail(condition, errorWhenFail) {
+        // todo
+    }
+
+    removeBlindly(identifier) {
         // todo
     }
 

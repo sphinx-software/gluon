@@ -103,10 +103,18 @@ export default class EntitySchemaReader {
 
         return lodash.mapValues(aggregations, metadata => {
             if (metadata.name) {
-                return {...metadata, foreignKey: metadata.name}
+                return {
+                    ...metadata,
+                    foreignKey: metadata.name,
+                    schema: this.read(metadata.entity)
+                }
             }
 
-            return {...metadata, foreignKey: this.namingConvention.fkNameFromTableAndIdColumn(tableName, primaryKey)}
+            return {
+                ...metadata,
+                foreignKey: this.namingConvention.fkNameFromTableAndIdColumn(tableName, primaryKey),
+                schema: this.read(metadata.entity)
+            }
         })
     }
 }

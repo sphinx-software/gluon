@@ -100,7 +100,27 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                     entity: HelloModel,
                     many: false,
                     name: undefined,
-                    foreignKey: "foo_models_id_field"
+                    foreignKey: "foo_models_id_field",
+                    schema: {
+                        primaryKey: "hello_models.id_field",
+                        table: "hello_models",
+                        fields: {
+                            "hello_models.id_field": {
+                                name: undefined,
+                                type: PrimaryKey
+                            },
+                            "hello_models.other_field": {
+                                name: undefined,
+                                type: String
+                            }
+                        },
+                        eagerAggregations: {
+
+                        },
+                        lazyAggregations: {
+
+                        }
+                    }
                 }
             },
             lazyAggregations: {
@@ -108,7 +128,27 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                     entity: WorldModel,
                     many: true,
                     name: undefined,
-                    foreignKey: "foo_models_id_field"
+                    foreignKey: "foo_models_id_field",
+                    schema: {
+                        primaryKey: "world_models.id_field",
+                        table: "world_models",
+                        fields: {
+                            "world_models.id_field": {
+                                name: undefined,
+                                type: PrimaryKey
+                            },
+                            "world_models.other_field": {
+                                name: undefined,
+                                type: String
+                            }
+                        },
+                        eagerAggregations: {
+
+                        },
+                        lazyAggregations: {
+
+                        }
+                    }
                 }
             }
         })
