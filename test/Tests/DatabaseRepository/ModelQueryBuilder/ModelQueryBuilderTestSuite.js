@@ -86,9 +86,10 @@ export class AggregatedModel {
 
 export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
 
-    async fusionActivated() {
-        this.modelQueryBuilder = new ModelQueryBuilder(new EntitySchemaReader(new NamingConvention()));
+    async fusionActivated(context) {
+        this.reader            = new EntitySchemaReader(new NamingConvention());
         this.connection        = (await this.container.make(DatabaseManagerInterface)).connection();
+        this.modelQueryBuilder = new ModelQueryBuilder();
     }
 
     @testCase()
@@ -99,7 +100,7 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
         let selectSpy = sinon.stub(query, 'select').returns(query);
         let fromSpy   = sinon.stub(query, 'from').returns(query);
 
-        this.modelQueryBuilder.makeSelect(Model, query);
+        this.modelQueryBuilder.makeSelect(this.reader.read(Model), query);
 
         assert(selectSpy.calledWith([
             'models.id_field', 'models.created_at', 'models.updated_at',
@@ -114,7 +115,7 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
 
         let query = this.connection.query();
 
-        this.modelQueryBuilder.makeSelect(AggregatedModel, query);
+        this.modelQueryBuilder.makeSelect(this.reader.read(AggregatedModel), query);
 
         let sql = query.toSQL();
 
