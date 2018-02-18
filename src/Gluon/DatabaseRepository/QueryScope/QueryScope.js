@@ -1,6 +1,10 @@
 import QueryContext from "./QueryContext";
 import lodash from "lodash";
 
+/**
+ * @todo QueryScope should become QueryMacro or some better name.
+ * @todo this guy will change the query and also modify the returned data. So QueryScope is not a good name at all!!!
+ */
 export default class QueryScope {
     positiveScopes = {};
     negativeScopes = {};
