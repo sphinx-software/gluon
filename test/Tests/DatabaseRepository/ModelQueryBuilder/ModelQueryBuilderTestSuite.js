@@ -102,10 +102,14 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
 
         this.modelQueryBuilder.makeSelect(this.reader.read(Model), query);
 
-        assert(selectSpy.calledWith([
-            'models.id_field', 'models.created_at', 'models.updated_at',
-            'models.string_field', 'models.json_field', 'models.hashed_field'
-        ]));
+        assert(selectSpy.calledWith({
+            'models.id_field': 'models.id_field',
+            'models.created_at': 'models.created_at',
+            'models.updated_at': 'models.updated_at',
+            'models.string_field': 'models.string_field',
+            'models.json_field': 'models.json_field',
+            'models.hashed_field': 'models.hashed_field'
+        }));
 
         assert(fromSpy.calledWith('models'));
     }
