@@ -17,6 +17,10 @@ export default class DatabaseRepository {
 
     Model           = null;
 
+    modelSchema     = {};
+
+    dataMapper        = null;
+
     modelQueryBuilder = null;
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -43,15 +47,36 @@ export default class DatabaseRepository {
         // todo
     }
 
-    async get(identifier) {
-        let query = this.readConnection.query();
-        this.modelQueryBuilder.makeSelect(this.Model, query);
+    /**
+     * Get a model by its identifier
+     *
+     * @param identifier
+     * @param defaultEntityIfNotExisted
+     * @return {Promise<*>}
+     */
+    async get(identifier, defaultEntityIfNotExisted = null) {
 
-        let schema = this.schemaReader
+        let query = this.readConnection.query();
+
+        this.modelQueryBuilder.makeSelect(this.modelSchema, query);
+
+        let rawResult = await query.where(this.modelSchema.primaryKey, '=', identifier);
+
+        if (!rawResult.length) {
+            return defaultEntityIfNotExisted;
+        }
+
+        return await this.dataMapper.mapModel(rawResult, this.Model);
     }
 
-    getOrFail(identifier, errorWhenFail) {
-        // todo
+    async getOrFail(identifier) {
+        let entity = await this.get(identifier);
+
+        if (!entity) {
+            this.throwsEntityNotFound();
+        }
+
+        return entity;
     }
 
     find(condition) {
@@ -156,8 +181,35 @@ export default class DatabaseRepository {
     // Model methods
     // -----------------------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * @param {ModelQueryBuilder} modelQueryBuilder
+     * @return {DatabaseRepository}
+     */
     setModelQueryBuilder(modelQueryBuilder) {
         this.modelQueryBuilder = modelQueryBuilder;
+
+        return this;
+    }
+
+    /**
+     *
+     * @param {EntitySchemaReader} reader
+     * @return {DatabaseRepository}
+     */
+    setSchemaReader(reader) {
+        this.schemaReader = reader;
+
+        return this;
+    }
+
+    /**
+     *
+     * @param {DataMapper} mapper
+     * @return {DatabaseRepository}
+     */
+    setDataMapper(mapper) {
+        this.dataMapper = mapper;
 
         return this;
     }
@@ -167,7 +219,8 @@ export default class DatabaseRepository {
      * @param Model
      */
     setModel(Model) {
-        this.Model = model;
+        this.Model       = Model;
+        this.modelSchema = this.schemaReader.read(Model);
 
         return this;
     }
@@ -179,8 +232,8 @@ export default class DatabaseRepository {
 
     /**
      *
-     * @param read
-     * @param write
+     * @param {DatabaseConnectionInterface} read
+     * @param {DatabaseConnectionInterface} write
      * @return {DatabaseRepository}
      */
     setConnection(read, write) {
@@ -203,5 +256,9 @@ export default class DatabaseRepository {
         this.bootstrapQueryScope();
 
         return this;
+    }
+
+    throwsEntityNotFound() {
+        throw new Error(`E_ENTITY_NOT_FOUND: Entity not found`);
     }
 }

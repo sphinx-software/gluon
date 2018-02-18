@@ -70,31 +70,42 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
             primaryKey: 'foo_models.id_field',
             table: "foo_models",
             fields: {
-                "foo_models.id_field": {
+                "idField": {
                     type: PrimaryKey,
-                    name: undefined
+                    name: "foo_models.id_field"
                 },
-                "foo_models.json_field": {
-                    type: Json,
-                    name: undefined
+                "modelField": {
+                    type: BarModel,
+                    name: {
+                        jsonField: {
+                            type: Json,
+                            name: "foo_models.json_field",
+                        },
+                        hashedField: {
+                            type: Hashed,
+                            name: "foo_models.hashed_field"
+                        }
+                    }
                 },
-                "foo_models.hashed_field": {
-                    type: Hashed,
-                    name: undefined
-                },
-                "foo_models.string_field": {
+                "stringField": {
                     type: String,
-                    name: undefined
+                    name: "foo_models.string_field"
                 },
-                "foo_models.created_at": {
-                    type: Timestamp,
-                    name: undefined
-                },
-                "foo_models.updated_at": {
-                    type: Timestamp,
-                    name: undefined
+                "timestampField": {
+                    type: Timestamps,
+                    name: {
+                        "createdAt": {
+                            type: Timestamp,
+                            name: "foo_models.created_at"
+                        },
+                        "updatedAt": {
+                            type: Timestamp,
+                            name: "foo_models.updated_at"
+                        }
+                    }
                 }
             },
+
             eagerAggregations: {
                 helloModel: {
                     entity: HelloModel,
@@ -105,12 +116,12 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                         primaryKey: "hello_models.id_field",
                         table: "hello_models",
                         fields: {
-                            "hello_models.id_field": {
-                                name: undefined,
+                            "idField": {
+                                name: "hello_models.id_field",
                                 type: PrimaryKey
                             },
-                            "hello_models.other_field": {
-                                name: undefined,
+                            "otherField": {
+                                name: "hello_models.other_field",
                                 type: String
                             }
                         },
@@ -123,6 +134,7 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                     }
                 }
             },
+
             lazyAggregations: {
                 worldModels: {
                     entity: WorldModel,
@@ -133,13 +145,13 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                         primaryKey: "world_models.id_field",
                         table: "world_models",
                         fields: {
-                            "world_models.id_field": {
-                                name: undefined,
-                                type: PrimaryKey
+                            idField: {
+                                type: PrimaryKey,
+                                name: "world_models.id_field"
                             },
-                            "world_models.other_field": {
-                                name: undefined,
-                                type: String
+                            otherField: {
+                                type: String,
+                                name: "world_models.other_field"
                             }
                         },
                         eagerAggregations: {

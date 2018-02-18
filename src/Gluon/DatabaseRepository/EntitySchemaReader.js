@@ -31,8 +31,7 @@ export default class EntitySchemaReader {
         );
 
         if (!foundPkFieldName) {
-            throw new Error(`E_SCHEMA_READER: Could not make aggregation for entity [${Entity.name}], ` +
-                'no [PrimaryKey] field type defined')
+            throw new Error(`E_SCHEMA_READER: Entity [${Entity.name}] does not have primary key`)
         }
 
         let primaryKeyFieldWithoutTableName = Reflect.getMetadata('gluon.entity.fields', Entity)[foundPkFieldName].name ||
@@ -72,22 +71,21 @@ export default class EntitySchemaReader {
      * @return {{}}
      */
     getFields(Entity, tableName) {
-        let fields = {};
-
-        lodash.forIn(
+        return lodash.mapValues(
             Reflect.getMetadata('gluon.entity.fields', Entity),
             (metaDescription, fieldName) => {
+                let name = null;
                 if (!(metaDescription.type.prototype instanceof PrimitiveType)) {
-                    fields = {...fields, ...this.getFields(metaDescription.type, tableName)};
+                    name = this.getFields(metaDescription.type, tableName)
                 } else if (!metaDescription.name) {
-                    fields[tableName + '.' + this.namingConvention.columnNameFromFieldName(fieldName)] = metaDescription;
+                    name = tableName + '.' + this.namingConvention.columnNameFromFieldName(fieldName)
                 } else {
-                    fields[tableName + '.' + lodash.snakeCase(metaDescription.name)] = metaDescription;
+                    name = tableName + '.' + lodash.snakeCase(metaDescription.name);
                 }
+
+                return {...metaDescription, name: name};
             }
         );
-
-        return fields;
     }
 
     /**
