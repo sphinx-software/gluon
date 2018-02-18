@@ -124,6 +124,10 @@ export default class EntitySchema {
             return item.map(i => this.castToJson(i));
         }
 
+        if (lodash.isFunction(item)) {
+            return this.castToJson(item());
+        }
+
         if (lodash.isFunction(item.toJson)) {
             return item.toJson();
         }
