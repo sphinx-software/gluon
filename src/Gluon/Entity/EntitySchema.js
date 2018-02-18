@@ -216,6 +216,7 @@ export default class EntitySchema {
      * @return {*}
      */
     static applyFor(entity) {
+        // noinspection JSCheckFunctionSignatures
         return new Proxy(entity, new EntitySchema(...EntitySchema.inspect(entity.constructor)));
     }
 }
