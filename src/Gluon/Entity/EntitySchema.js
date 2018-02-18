@@ -20,7 +20,7 @@ export default class EntitySchema {
     fields = {};
 
     /**
-     * The map of virtual fields (schema access level only)
+     * The map of virtual fields (schema level access only)
      *
      * @type {{}}
      */
