@@ -63,7 +63,7 @@ let newCredential     = await credentialRepository.create({username: 'sexyRikky'
 
 let allOfCredentials  = await credentialRepository.all();
 
-let deletedCredendeitals = await credentialWithId1.onlyTrash().all();
+let deletedCredentials = await credentialRepository.withInTrash().all();
 
 
 /// more and more stuff ;)
