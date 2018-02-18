@@ -9,13 +9,26 @@ export default class ModelQueryBuilder {
         query.from(modelSchema.table);
     }
 
+    resolveFieldsFromSchema(fieldSchema) {
+        let fields = [];
+        lodash.forIn(fieldSchema, fieldReceipt => {
+            fields = fields.concat(
+                lodash.isString(fieldReceipt.name) ?
+                    [fieldReceipt.name] :
+                    this.resolveFieldsFromSchema(fieldReceipt.name)
+            )
+        });
+
+        return fields;
+    }
+
     makeSelectWithoutFrom(modelSchema, query) {
-        query.select(lodash.keys(modelSchema.fields));
+        query.select(this.resolveFieldsFromSchema(modelSchema.fields));
 
         lodash.forIn(modelSchema.eagerAggregations, (aggregation) => {
             let aggregatedModelSchema = aggregation.schema;
             this.makeSelectWithoutFrom(aggregatedModelSchema, query);
-            query.join(aggregatedModelSchema.table, function () {
+            query.leftJoin(aggregatedModelSchema.table, function () {
                 this.on(modelSchema.primaryKey, '=', aggregatedModelSchema.table + '.' + aggregation.foreignKey);
             });
         });

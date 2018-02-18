@@ -8,7 +8,7 @@ import {
     String, PrimaryKey, Timestamps, Hashed, Json, Timestamp
 } from "Gluon";
 
-export class BarModel {
+class BarModel {
     @type(Json)
     jsonField;
 
@@ -16,7 +16,7 @@ export class BarModel {
     hashedField;
 }
 
-export class HelloModel {
+class HelloModel {
     @type(PrimaryKey)
     idField;
 
@@ -24,7 +24,7 @@ export class HelloModel {
     otherField;
 }
 
-export class WorldModel {
+class WorldModel {
     @type(PrimaryKey)
     idField;
 
@@ -32,7 +32,7 @@ export class WorldModel {
     otherField;
 }
 
-export class FooModel {
+class FooModel {
 
     @type(PrimaryKey)
     idField;

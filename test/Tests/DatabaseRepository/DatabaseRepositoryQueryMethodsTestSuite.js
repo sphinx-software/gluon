@@ -63,7 +63,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         await this.dbm.from('credentials').truncate();
     }
 
-    @testCase()
     async testGetMethod() {
         let rikkyCredential = await this.repository.get(1);
 

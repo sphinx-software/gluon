@@ -14,7 +14,7 @@ import {assert} from "chai";
 import RepositoryTestSuite from "../../../RepositoryTestSuite";
 import {DatabaseManagerInterface} from "Fusion";
 
-export class Bar {
+class Bar {
     @type(Json)
     jsonField;
 
@@ -22,13 +22,13 @@ export class Bar {
     hashedField;
 }
 
-export class Foo {
+class Foo {
 
     @type(String)
     stringField;
 }
 
-export class Model {
+class Model {
 
     @type(PrimaryKey)
     idField;
@@ -44,7 +44,7 @@ export class Model {
 }
 
 
-export class DeepAggregatedModel {
+class DeepAggregatedModel {
 
     @type(PrimaryKey)
     someIdField;
@@ -53,7 +53,7 @@ export class DeepAggregatedModel {
     timestamps;
 }
 
-export class OtherModel {
+class OtherModel {
 
     @type(PrimaryKey, 'my_pk_field')
     idField;
@@ -67,7 +67,7 @@ export class OtherModel {
 }
 
 @model('customized_aggregated_models')
-export class AggregatedModel {
+class AggregatedModel {
 
     @type(PrimaryKey)
     idField;
@@ -129,9 +129,9 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
                 "`other_models`.`my_pk_field`, `other_models`.`created_at`, `other_models`.`updated_at`, " +
                 "`deep_aggregated_models`.`some_id_field`, `deep_aggregated_models`.`created_at`, `deep_aggregated_models`.`updated_at` " +
             "from `customized_aggregated_models` " +
-                "inner join `models` on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
-                "inner join `deep_aggregated_models` on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` " +
-                "inner join `other_models` on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`"
+                "left join `models` on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
+                "left join `deep_aggregated_models` on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` " +
+                "left join `other_models` on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`"
         ;
 
         assert.equal(sql.sql, expectedSql);
