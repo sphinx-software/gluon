@@ -122,6 +122,10 @@ export default class DataMapper {
      */
     async mapModel(databaseRowSet, Model, schema) {
 
+        if (!databaseRowSet.length) {
+            return null;
+        }
+
         // In this situation, every rowSet is referring to one unique model.
         // So for mapping itself without aggregation, we can blindly pick the first row
         let databaseRow = databaseRowSet[0];
@@ -150,9 +154,11 @@ export default class DataMapper {
             );
         }
 
+        let identifiableRowSet = databaseRowSet.filter(row => !lodash.isNull(row[primaryKeyColumn]));
+
         // We'll use the chunking strategy for solving deep aggregated models
         // First, we'll group the current databaseRowSet by the models identifier
-        let groupedRecordsByPk = lodash.groupBy(databaseRowSet, row => row[primaryKeyColumn]);
+        let groupedRecordsByPk = lodash.groupBy(identifiableRowSet, row => row[primaryKeyColumn]);
 
         // Then we'll try to build each one of them, and repeat the steps recursively with aggregations
         let mappingPromises = lodash.values(groupedRecordsByPk)

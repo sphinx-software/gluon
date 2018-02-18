@@ -77,7 +77,6 @@ export default class DataMapperTestSuite extends TestSuite {
         }], ModelStub, this.reader.read(ModelStub));
 
         assert.instanceOf(model, ModelStub);
-
         assert.deepEqual(model.fooBar, {foo: "bar"});
     }
 
@@ -174,13 +173,12 @@ export default class DataMapperTestSuite extends TestSuite {
 
         assert.instanceOf(model, ModelStubWithAggregation);
 
-        // The model should have aggregated property as an async function
         // Even on eager loading, we still return the aggregated model as an async function.
         // Which will help the api become unified, predictable.
         // This also avoid unnecessary conditional check on the consumer code.
 
         // However, if the developer wants to get actual value synchronously,
-        // he can get it via the virtual field (using model.schema.virtual(fieldName)
+        // he can get it via the virtual field @code: model.schema.virtual(fieldName)
         assert.equal(model.schema.virtual('singleAggregation'), await model.singleAggregation());
         assert.equal(model.schema.virtual('multiAggregation'), await model.multiAggregation());
 
@@ -196,5 +194,67 @@ export default class DataMapperTestSuite extends TestSuite {
 
         assert.instanceOf(shouldBeListOfAggregatedModelStub[1], AggregatedModelStub);
         assert.equal(shouldBeListOfAggregatedModelStub[1].id, 2);
+    }
+
+    @testCase()
+    async testMapperMapsModelsOnNullValues() {
+        let rowSet = [];
+
+        let shouldBeNull = await this.mapper
+            .mapModel(rowSet, ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject))
+        ;
+
+        assert.isNull(shouldBeNull);
+
+        let shouldBeEmpty = await this.mapper
+            .mapModels(rowSet, ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject))
+        ;
+
+        assert.isEmpty(shouldBeEmpty);
+    }
+
+    @testCase()
+    async testMapperMapsModelsOnNullAggregations() {
+        let rowSet = [
+            {
+                // The Main model row set
+                "model_stub_with_aggregations.id": 1,
+
+                // The aggregated models
+                'model_stub_with_value_objects.id': null,
+                'model_stub_with_value_objects.created_at': null,
+                'model_stub_with_value_objects.updated_at': null,
+                'model_stub_with_value_objects.foo_bar': null,
+
+
+                'aggregated_model_stubs.id': null,
+                'aggregated_model_stubs.value': null
+            },
+            {
+                // The Main model row set
+                "model_stub_with_aggregations.id": 2,
+
+                // The aggregated models
+                'model_stub_with_value_objects.id': null,
+                'model_stub_with_value_objects.created_at': null,
+                'model_stub_with_value_objects.updated_at': null,
+                'model_stub_with_value_objects.foo_bar': null,
+
+
+                'aggregated_model_stubs.id': null,
+                'aggregated_model_stubs.value': null
+            }
+        ];
+
+        let results = await this.mapper
+            .mapModels(rowSet, ModelStubWithAggregation, this.reader.read(ModelStubWithAggregation));
+
+        assert.lengthOf(results, 2);
+
+        assert.isNull(await results[0].singleAggregation());
+        assert.isNull(await results[1].singleAggregation());
+
+        assert.isEmpty(await results[0].multiAggregation());
+        assert.isEmpty(await results[1].multiAggregation());
     }
 }
