@@ -56,17 +56,21 @@ export default class DatabaseRepository {
      */
     async get(identifier, defaultEntityIfNotExisted = null) {
 
-        let query = this.readConnection.query();
+        let query = this.modelQueryBuilder
+            .makeSelect(this.modelSchema, this.readConnection.query())
+            .where(this.modelSchema.primaryKey, '=', identifier)
+        ;
 
-        this.modelQueryBuilder.makeSelect(this.modelSchema, query);
+        // Apply the query scope
+        this.makeQueryScopeContext().dispatch(query);
 
-        let rawResult = await query.where(this.modelSchema.primaryKey, '=', identifier);
+        // Execute the query
+        let rowSet = await query;
 
-        if (!rawResult.length) {
-            return defaultEntityIfNotExisted;
-        }
-
-        return await this.dataMapper.mapModel(rawResult, this.Model, this.modelSchema.fields);
+        return rowSet.length ?
+            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema.fields) :
+            defaultEntityIfNotExisted
+        ;
     }
 
     async getOrFail(identifier) {

@@ -5,8 +5,7 @@ export default class ModelQueryBuilder {
 
     makeSelect(modelSchema, query) {
         this.makeSelectWithoutFrom(modelSchema, query);
-
-        query.from(modelSchema.table);
+        return query.from(modelSchema.table);
     }
 
     resolveFieldsFromSchema(fieldSchema) {

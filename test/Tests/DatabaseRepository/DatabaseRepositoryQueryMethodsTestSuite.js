@@ -10,7 +10,8 @@ import {
     NamingConvention,
     Timestamps,
     DataMapper,
-    type
+    type,
+    hidden
 } from "Gluon";
 
 import {DatabaseManagerInterface} from "Fusion";
@@ -41,7 +42,7 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
             .setSchemaReader(new EntitySchemaReader(new NamingConvention()))
             .setModelQueryBuilder(new ModelQueryBuilder())
             .setQueryScope(new QueryScope())
-            .setDataMapper(new DataMapper(new NamingConvention(), this.container))
+            .setDataMapper(new DataMapper(this.container))
 
             .setModel(Credential)
             .setConnection(this.dbm.connection(), this.dbm.connection())

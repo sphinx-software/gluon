@@ -1,4 +1,3 @@
-import NamingConvention from "./NamingConvention";
 import Promise from "bluebird";
 import lodash from "lodash";
 import {PrimitiveType} from "Gluon";
@@ -8,12 +7,10 @@ export default class DataMapper {
 
     /**
      *
-     * @param {NamingConvention} namingConvention
      * @param {Container} container
      */
-    constructor(namingConvention, container) {
-        this.namingConvention = namingConvention;
-        this.container        = container;
+    constructor(container) {
+        this.container = container;
     }
 
     /**
@@ -24,10 +21,10 @@ export default class DataMapper {
      * @param EntitySchema
      * @return {Promise<*>}
      */
-    async mapPrimitiveValues(databaseRow, fieldDescription, EntitySchema) {
+    async mapPrimitiveValues(databaseRow, fieldDescription, EntitySchema, fieldName) {
         if(lodash.isUndefined(databaseRow[fieldDescription.name])) {
             throw new Error(`E_DATA_MAPPER: Invalid row result passed to data mapper. ` +
-                `Could not map field [${fieldDescription.name}] of model [${EntitySchema.name}], ` +
+                `Could not map field [${fieldName}] of model [${EntitySchema.name}], ` +
                 `row result from database does not have column [${fieldDescription.name}]`
             );
 
@@ -69,10 +66,10 @@ export default class DataMapper {
 
 
         let modelProperties = await Promise.props(
-            lodash.mapValues(modelCreationReceipt, (fieldDescription) => {
+            lodash.mapValues(modelCreationReceipt, (fieldDescription, fieldName) => {
                 return fieldDescription.type.prototype instanceof PrimitiveType ?
                     // If the type of the field is an inheritance of PrimitiveType
-                    this.mapPrimitiveValues(databaseRow, fieldDescription, Model) :
+                    this.mapPrimitiveValues(databaseRow, fieldDescription, Model, fieldName) :
                     // otherwise, we'll remap the type as an model
                     this.mapModel(databaseRowSet, fieldDescription.type, fieldDescription.name);
             }
