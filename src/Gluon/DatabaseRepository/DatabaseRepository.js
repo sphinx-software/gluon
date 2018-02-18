@@ -68,7 +68,7 @@ export default class DatabaseRepository {
         let rowSet = await query;
 
         return rowSet.length ?
-            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema.fields) :
+            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) :
             defaultEntityIfNotExisted
         ;
     }

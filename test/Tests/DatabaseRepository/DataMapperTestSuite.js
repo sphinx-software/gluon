@@ -1,7 +1,7 @@
 import {TestSuite, testCase} from "WaveFunction";
 import {assert} from "chai";
 import {DataMapper, EntitySchemaReader, NamingConvention, aggregation, aggregations, eager} from "Gluon";
-import {type, PrimaryKey, Json, Timestamps} from "Gluon";
+import {type, PrimaryKey, Json, Timestamps, String} from "Gluon";
 import Container from "@sphinx-software/container";
 import {EventEmitter} from "events";
 
@@ -26,6 +26,9 @@ class ModelStubWithValueObject {
 }
 
 class AggregatedModelStub {
+
+    @type(PrimaryKey)
+    id = null;
 
     @type(String)
     value = null;
@@ -53,7 +56,6 @@ export default class DataMapperTestSuite extends TestSuite {
         // Jeezzzzzz! Creating the real awesome container is
         // even easier than mocking it
         let container = new Container(new EventEmitter());
-
         this.reader   = new EntitySchemaReader(new NamingConvention());
 
         container
@@ -72,7 +74,7 @@ export default class DataMapperTestSuite extends TestSuite {
 
         let model = await this.mapper.mapModel([{
             'model_stubs.foo_bar': JSON.stringify({foo: 'bar'})
-        }], ModelStub, this.reader.read(ModelStub).fields);
+        }], ModelStub, this.reader.read(ModelStub));
 
         assert.instanceOf(model, ModelStub);
 
@@ -89,7 +91,7 @@ export default class DataMapperTestSuite extends TestSuite {
             'model_stub_with_value_objects.created_at': createdAtTimestamp,
             'model_stub_with_value_objects.updated_at': updatedAtTimestamp,
             'model_stub_with_value_objects.foo_bar': JSON.stringify({foo: 'bar'})
-        }], ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject).fields);
+        }], ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject));
 
         assert.instanceOf(model, ModelStubWithValueObject);
 
@@ -112,7 +114,7 @@ export default class DataMapperTestSuite extends TestSuite {
     }
 
     @testCase()
-    async testDataMapperMakesAModelWithAggregations() {
+    async testDataMapperMakesAListOfComplexModelsWithAggregations() {
 
         let createdAtTimestamp = new Date().getTime();
         let updatedAtTimestamp = new Date().getTime();
@@ -128,6 +130,7 @@ export default class DataMapperTestSuite extends TestSuite {
                 'model_stub_with_value_objects.created_at': createdAtTimestamp,
                 'model_stub_with_value_objects.updated_at': updatedAtTimestamp,
                 'model_stub_with_value_objects.foo_bar': JSON.stringify({foo: 'bar'}),
+
 
                 'aggregated_model_stubs.id': 1,
                 'aggregated_model_stubs.value': 'any'
@@ -145,13 +148,29 @@ export default class DataMapperTestSuite extends TestSuite {
                 'aggregated_model_stubs.id': 2,
                 'aggregated_model_stubs.value': 'thing'
             },
+
+            {
+                // The Main model row set
+                "model_stub_with_aggregations.id": 2,
+
+                // The aggregated models
+                'model_stub_with_value_objects.id': 3,
+                'model_stub_with_value_objects.created_at': createdAtTimestamp,
+                'model_stub_with_value_objects.updated_at': updatedAtTimestamp,
+                'model_stub_with_value_objects.foo_bar': JSON.stringify({foo: 'bar'}),
+
+                'aggregated_model_stubs.id': 5,
+                'aggregated_model_stubs.value': 'thing'
+            }
         ];
 
-        let model = await this.mapper.mapModel(
+        let models = await this.mapper.mapModels(
             rowSet,
             ModelStubWithAggregation,
-            this.reader.read(ModelStubWithAggregation).fields
+            this.reader.read(ModelStubWithAggregation)
         );
+
+        let model = models[0];
 
         assert.instanceOf(model, ModelStubWithAggregation);
 
@@ -168,7 +187,7 @@ export default class DataMapperTestSuite extends TestSuite {
 
         let shouldBeListOfAggregatedModelStub = await model.multiAggregation();
 
-        assert.length(shouldBeListOfAggregatedModelStub, 2);
+        assert.lengthOf(shouldBeListOfAggregatedModelStub, 2);
 
         assert.instanceOf(shouldBeListOfAggregatedModelStub[0], AggregatedModelStub);
         assert.equal(shouldBeListOfAggregatedModelStub[0].id, 1);

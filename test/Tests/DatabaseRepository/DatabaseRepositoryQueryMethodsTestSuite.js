@@ -10,8 +10,7 @@ import {
     NamingConvention,
     Timestamps,
     DataMapper,
-    type,
-    hidden
+    type
 } from "Gluon";
 
 import {DatabaseManagerInterface} from "Fusion";

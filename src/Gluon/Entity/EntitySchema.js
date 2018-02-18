@@ -128,11 +128,11 @@ export default class EntitySchema {
             throw new Error(`E_SCHEMA_GUARD_MODE: Field [${field}] is hidden`);
         }
 
-        if ('toJson' === field) {
+        if (!Reflect.has(entity, 'toJson') && 'toJson' === field) {
             return () => this.toJson(entity);
         }
 
-        if ('setFields' === field) {
+        if (!Reflect.has(entity, 'setFields') &&'setFields' === field) {
             return (fieldValues) => this.setFields(entity, fieldValues);
         }
 
