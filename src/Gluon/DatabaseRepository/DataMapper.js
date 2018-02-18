@@ -112,25 +112,17 @@ export default class DataMapper {
     }
 
     /**
-     * Recursively map a single model with aggregation.
-     * Every single row in the databaseRowSet must refer to one unique Model.
+     * Recursively map aggregations to an existing model.
      *
      * @param databaseRowSet
-     * @param Model
-     * @param schema
-     * @return {Promise<{}>}
+     * @param model
+     * @param aggregations
+     * @return {Promise<*>}
      */
-    async mapModel(databaseRowSet, Model, schema) {
-
-        // In this situation, every rowSet is referring to one unique model.
-        // So for mapping itself without aggregation, we can blindly pick the first row
-        let databaseRow = databaseRowSet[0];
-
-        let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
-
+    async mapModelWithAggregation(databaseRowSet, model, aggregations) {
         model.schema.unguard();
 
-        await Promise.props(lodash.mapValues(schema.eagerAggregations, async(aggregationSchema, modelPropertyName) => {
+        await Promise.props(lodash.mapValues(aggregations, async(aggregationSchema, modelPropertyName) => {
 
             let aggregatedResult = await this.mapModels(
                 databaseRowSet, aggregationSchema.entity, aggregationSchema.schema
@@ -149,5 +141,25 @@ export default class DataMapper {
         model.schema.guard();
 
         return model;
+    }
+
+    /**
+     * Recursively map a single model with aggregation.
+     * Every single row in the databaseRowSet must refer to one unique Model.
+     *
+     * @param databaseRowSet
+     * @param Model
+     * @param schema
+     * @return {Promise<{}>}
+     */
+    async mapModel(databaseRowSet, Model, schema) {
+
+        // In this situation, every rowSet is referring to one unique model.
+        // So for mapping itself without aggregation, we can blindly pick the first row
+        let databaseRow = databaseRowSet[0];
+
+        let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
+
+        return await this.mapModelWithAggregation(databaseRowSet, model, schema.eagerAggregations);
     }
 }
