@@ -30,10 +30,6 @@ export default class EntitySchemaReader {
             metadata => metadata.type === PrimaryKey
         );
 
-        if (!foundPkFieldName) {
-            throw new Error(`E_SCHEMA_READER: Entity [${Entity.name}] does not have primary key`)
-        }
-
         let primaryKeyFieldWithoutTableName = Reflect.getMetadata('gluon.entity.fields', Entity)[foundPkFieldName].name ||
             this.namingConvention.columnNameFromFieldName(foundPkFieldName);
 
