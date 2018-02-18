@@ -98,16 +98,37 @@ export default class EntitySchema {
      * @param {*} entity
      */
     toJson(entity) {
-        return lodash.mapValues(
-            {...lodash.omit(this.fields, this.hiddenFields), ...this.virtualFields},
-            (metadata, fieldName) => {
-                if (entity[fieldName] !== null && entity[fieldName]['toJson']) {
-                    return entity[fieldName].toJson()
-                }
-
-                return entity[fieldName];
-            }
+        let realJson = lodash.mapValues(
+            lodash.omit(this.fields, this.hiddenFields),
+            (metadata, fieldName) => this.castToJson(entity[fieldName])
         );
+
+        let virtualJson = lodash.mapValues(this.virtualFields, i => this.castToJson(i));
+
+        return {...realJson, ...virtualJson};
+    }
+
+    /**
+     * Cast generic type into a json serializable object
+     *
+     * @param item
+     * @return {*}
+     */
+    castToJson(item) {
+        // Prevent error when working with null, undefined
+        if (!item) {
+            return item;
+        }
+
+        if (lodash.isArray(item)) {
+            return item.map(i => this.castToJson(i));
+        }
+
+        if (lodash.isFunction(item.toJson)) {
+            return item.toJson();
+        }
+
+        return item;
     }
 
     /**

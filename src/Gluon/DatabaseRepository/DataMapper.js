@@ -136,16 +136,14 @@ export default class DataMapper {
                 databaseRowSet, aggregationSchema.entity, aggregationSchema.schema
             );
 
-            let aggregatedModelValue = aggregationSchema.many ? aggregatedResult : aggregatedResult[0] || null;
-
+            let aggregatedModelValue = aggregationSchema.many ? aggregatedResult : (aggregatedResult[0] || null);
 
             model[modelPropertyName] = () => Promise.resolve(aggregatedModelValue);
-
 
             // Treat the toJson behavior of the entity,
             // since the aggregated model is built, we'll tell the schema to displays
             // the aggregated values too.
-            
+            model.schema.setVirtual(modelPropertyName, aggregatedModelValue);
         }));
 
         model.schema.guard();

@@ -172,6 +172,8 @@ export default class DataMapperTestSuite extends TestSuite {
 
         let model = models[0];
 
+        console.log(model.toJson());
+
         assert.instanceOf(model, ModelStubWithAggregation);
 
 
@@ -179,6 +181,9 @@ export default class DataMapperTestSuite extends TestSuite {
         // Even on eager loading, we still return the aggregated model as an async function.
         // Which will help the api become unified, predictable.
         // This also avoid unnecessary conditional check on the consumer code.
+
+        // However, if the developer wants to get actual value synchronously,
+        // he can get it via the virtual field (using model.schema.virtual(fieldName)
 
         let shouldBeModelStubWithValueObject = await model.singleAggregation();
 
