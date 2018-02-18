@@ -62,7 +62,7 @@ export default class DatabaseRepository {
         ;
 
         // Apply the query scope
-        this.makeQueryScopeContext().dispatch(query);
+        // this.makeQueryScopeContext().dispatch(query);
 
         // Execute the query
         let rowSet = await query;
@@ -257,7 +257,8 @@ export default class DatabaseRepository {
      * @return {DatabaseRepository}
      */
     bootstrap() {
-        this.bootstrapQueryScope();
+        // todo change this to query macro
+        // this.bootstrapQueryScope();
 
         return this;
     }

@@ -2,7 +2,6 @@ import {testCase} from "WaveFunction";
 import RepositoryTestSuite from "../../RepositoryTestSuite";
 import {
     DatabaseRepository,
-    QueryScope,
     ModelQueryBuilder,
     PrimaryKey,
     String,
@@ -40,7 +39,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         this.repository = new DatabaseRepository()
             .setSchemaReader(new EntitySchemaReader(new NamingConvention()))
             .setModelQueryBuilder(new ModelQueryBuilder())
-            .setQueryScope(new QueryScope())
             .setDataMapper(new DataMapper(this.container))
 
             .setModel(Credential)
