@@ -23,7 +23,10 @@ export default class ModelQueryBuilder {
     }
 
     makeSelectWithoutFrom(modelSchema, query) {
-        query.select(this.resolveFieldsFromSchema(modelSchema.fields));
+        let resolvedFields  = this.resolveFieldsFromSchema(modelSchema.fields);
+        let fieldsWithAlias = lodash.zipObject(resolvedFields, resolvedFields);
+
+        query.select(fieldsWithAlias);
 
         lodash.forIn(modelSchema.eagerAggregations, (aggregation) => {
             let aggregatedModelSchema = aggregation.schema;

@@ -124,14 +124,26 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
         // the query is built properly.
         let expectedSql =
             "select " +
-                "`customized_aggregated_models`.`id_field`, `customized_aggregated_models`.`some_field`, " +
-                "`models`.`id_field`, `models`.`created_at`, `models`.`updated_at`, `models`.`string_field`, `models`.`json_field`, `models`.`hashed_field`, " +
-                "`other_models`.`my_pk_field`, `other_models`.`created_at`, `other_models`.`updated_at`, " +
-                "`deep_aggregated_models`.`some_id_field`, `deep_aggregated_models`.`created_at`, `deep_aggregated_models`.`updated_at` " +
-            "from `customized_aggregated_models` " +
-                "left join `models` on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
-                "left join `deep_aggregated_models` on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` " +
-                "left join `other_models` on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`"
+                "`customized_aggregated_models`.`id_field` as `customized_aggregated_models.id_field`, " +
+                "`customized_aggregated_models`.`some_field` as `customized_aggregated_models.some_field`, " +
+                "`models`.`id_field` as `models.id_field`, " +
+                "`models`.`created_at` as `models.created_at`, " +
+                "`models`.`updated_at` as `models.updated_at`, " +
+                "`models`.`string_field` as `models.string_field`, " +
+                "`models`.`json_field` as `models.json_field`, " +
+                "`models`.`hashed_field` as `models.hashed_field`, " +
+                "`other_models`.`my_pk_field` as `other_models.my_pk_field`, " +
+                "`other_models`.`created_at` as `other_models.created_at`, " +
+                "`other_models`.`updated_at` as `other_models.updated_at`, " +
+                "`deep_aggregated_models`.`some_id_field` as `deep_aggregated_models.some_id_field`, " +
+                "`deep_aggregated_models`.`created_at` as `deep_aggregated_models.created_at`, " +
+                "`deep_aggregated_models`.`updated_at` as `deep_aggregated_models.updated_at` " +
+            "from `customized_aggregated_models` left join `models` " +
+                "on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
+            "left join `deep_aggregated_models` " +
+                "on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` " +
+            "left join `other_models` " +
+                "on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`"
         ;
 
         assert.equal(sql.sql, expectedSql);
