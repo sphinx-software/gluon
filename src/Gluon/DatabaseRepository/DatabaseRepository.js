@@ -66,7 +66,7 @@ export default class DatabaseRepository {
             return defaultEntityIfNotExisted;
         }
 
-        return await this.dataMapper.mapModel(rawResult, this.Model);
+        return await this.dataMapper.mapModel(rawResult, this.Model, this.modelSchema.fields);
     }
 
     async getOrFail(identifier) {

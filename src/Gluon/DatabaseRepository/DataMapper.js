@@ -1,7 +1,8 @@
 import NamingConvention from "./NamingConvention";
 import Promise from "bluebird";
 import lodash from "lodash";
-import {EntitySchema, PrimitiveType} from "Gluon";
+import {PrimitiveType} from "Gluon";
+import {model, EntitySchema} from "../Entity";
 
 export default class DataMapper {
 
@@ -18,21 +19,20 @@ export default class DataMapper {
     /**
      *
      *
-     * @param fieldName
-     * @param columnName
      * @param databaseRow
-     * @param Type
+     * @param fieldDescription
+     * @param EntitySchema
      * @return {Promise<*>}
      */
-    async mapPrimitiveValues(fieldName, columnName, databaseRow, Type) {
-        if(lodash.isUndefined(databaseRow[columnName])) {
+    async mapPrimitiveValues(databaseRow, fieldDescription, EntitySchema) {
+        if(lodash.isUndefined(databaseRow[fieldDescription.name])) {
             throw new Error(`E_DATA_MAPPER: Invalid row result passed to data mapper. ` +
-                `Could not map field [${fieldName}] of model [${EntitySchema.name}], ` +
-                `row result from database does not have column [${columnName}]`
+                `Could not map field [${fieldDescription.name}] of model [${EntitySchema.name}], ` +
+                `row result from database does not have column [${fieldDescription.name}]`
             );
 
         }
-        return Type.fromStorage(databaseRow[columnName]);
+        return fieldDescription.type.fromStorage(databaseRow[fieldDescription.name]);
     }
 
     /**
@@ -55,24 +55,26 @@ export default class DataMapper {
 
     /**
      *
-     * @param databaseRow
+     * @param databaseRowSet
      * @param Model
+     * @param modelCreationReceipt
      * @return {Promise<*>}
      */
-    async mapModel(databaseRow, Model) {
+    async mapModel(databaseRowSet, Model, modelCreationReceipt) {
 
-        let schemaInspection = EntitySchema.inspect(Model);
-        let modelProperties  = await Promise.props(
-            lodash.mapValues(schemaInspection[0], (fieldDescription, fieldName) => {
+        // We don't care if the databaseRowSet has more than 1 length, since that case should be handled by
+        // aggregation. We'll assuming that every "main" model's field should be the same in each row, so
+        // we'll pick the first one is enough.
+        let databaseRow = databaseRowSet[0];
 
-                let columnName = fieldDescription.name ||
-                    this.namingConvention.columnNameFromFieldName(fieldName);
 
+        let modelProperties = await Promise.props(
+            lodash.mapValues(modelCreationReceipt, (fieldDescription) => {
                 return fieldDescription.type.prototype instanceof PrimitiveType ?
                     // If the type of the field is an inheritance of PrimitiveType
-                    this.mapPrimitiveValues(fieldName, columnName, databaseRow, fieldDescription.type) :
+                    this.mapPrimitiveValues(databaseRow, fieldDescription, Model) :
                     // otherwise, we'll remap the type as an model
-                    this.mapModel(databaseRow, fieldDescription.type);
+                    this.mapModel(databaseRowSet, fieldDescription.type, fieldDescription.name);
             }
         ));
 
