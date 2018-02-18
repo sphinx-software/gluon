@@ -20,6 +20,13 @@ export default class EntitySchema {
     fields = {};
 
     /**
+     * The map of virtual fields (schema access level only)
+     *
+     * @type {{}}
+     */
+    virtualFields = {};
+
+    /**
      * List of hidden fields
      *
      * @type {Array}
@@ -62,13 +69,37 @@ export default class EntitySchema {
     }
 
     /**
+     * Set a virtual field to the schema.
+     * Virtual fields just helps on .toJson() method.
+     * It has no special ability.
+     *
+     * @param field
+     * @param value
+     * @return {EntitySchema}
+     */
+    setVirtual(field, value) {
+        this.virtualFields[field] = value;
+        return this;
+    }
+
+    /**
+     * Get a virtual field from the schema
+     *
+     * @param field
+     * @return {*}
+     */
+    virtual(field) {
+        return this.virtualFields[field];
+    }
+
+    /**
      * Jsonify the entity
      *
      * @param {*} entity
      */
     toJson(entity) {
         return lodash.mapValues(
-            lodash.omit(this.fields, this.hiddenFields),
+            {...lodash.omit(this.fields, this.hiddenFields), ...this.virtualFields},
             (metadata, fieldName) => {
                 if (entity[fieldName] !== null && entity[fieldName]['toJson']) {
                     return entity[fieldName].toJson()
