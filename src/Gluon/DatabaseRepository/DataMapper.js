@@ -19,6 +19,7 @@ export default class DataMapper {
      * @param databaseRow
      * @param fieldDescription
      * @param EntitySchema
+     * @param fieldName
      * @return {Promise<*>}
      */
     async mapPrimitiveValues(databaseRow, fieldDescription, EntitySchema, fieldName) {
