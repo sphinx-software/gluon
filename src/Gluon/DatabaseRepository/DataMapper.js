@@ -19,6 +19,24 @@ export default class DataMapper {
     }
 
     /**
+     * Creates a model by its properties
+     *
+     * @param modelProperties
+     * @param Model
+     * @return {Promise<*>}
+     */
+    async factoryModel(modelProperties, Model) {
+        let model = await this.container.make(Model);
+        let proxiedModel = EntitySchema.applyFor(model);
+
+        proxiedModel.schema.unguard();
+        proxiedModel.setFields(modelProperties);
+        proxiedModel.schema.guard();
+
+        return proxiedModel;
+    }
+
+    /**
      * Map the primitive values
      *
      *
@@ -37,24 +55,6 @@ export default class DataMapper {
 
         }
         return fieldDescription.type.fromStorage(databaseRow[fieldDescription.name]);
-    }
-
-    /**
-     * Creates a model by its properties
-     *
-     * @param modelProperties
-     * @param Model
-     * @return {Promise<*>}
-     */
-    async factoryModel(modelProperties, Model) {
-        let model = await this.container.make(Model);
-        let proxiedModel = EntitySchema.applyFor(model);
-
-        proxiedModel.schema.unguard();
-        proxiedModel.setFields(modelProperties);
-        proxiedModel.schema.guard();
-
-        return proxiedModel;
     }
 
     /**
@@ -77,38 +77,6 @@ export default class DataMapper {
             ));
 
         return await this.factoryModel(modelProperties, Model)
-    }
-
-    /**
-     * Map models with its related databaseRowSet.
-     *
-     * @param databaseRowSet
-     * @param Model
-     * @param schema
-     * @return {Promise<*>}
-     */
-    mapModels(databaseRowSet, Model, schema) {
-
-        // Distinct the rowSet by the aggregated model id:
-        let primaryKeyColumn = schema.primaryKey;
-
-        if (!primaryKeyColumn) {
-            throw new Error(`E_DATA_MAPPER: Could not map data of non-primary key entity.` +
-                ` Entity [${Model.name}] does not have [PrimaryKey] field type`
-            );
-        }
-
-        // We'll use the chunking strategy for solving deep aggregated models
-        // First, we'll group the current databaseRowSet by the models identifier
-        let groupedRecordsByPk = lodash.groupBy(databaseRowSet, row => row[primaryKeyColumn]);
-
-        // Then we'll try to build each one of them, and repeat the steps recursively with aggregations
-        let mappingPromises = lodash.values(groupedRecordsByPk)
-            .map(groupedRowSet => this.mapModel(groupedRowSet, Model, schema))
-        ;
-
-
-        return Promise.all(mappingPromises);
     }
 
     /**
@@ -161,5 +129,37 @@ export default class DataMapper {
         let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
 
         return await this.mapModelWithAggregation(databaseRowSet, model, schema.eagerAggregations);
+    }
+
+    /**
+     * Map models with its related databaseRowSet.
+     *
+     * @param databaseRowSet
+     * @param Model
+     * @param schema
+     * @return {Promise<*>}
+     */
+    mapModels(databaseRowSet, Model, schema) {
+
+        // Distinct the rowSet by the aggregated model id:
+        let primaryKeyColumn = schema.primaryKey;
+
+        if (!primaryKeyColumn) {
+            throw new Error(`E_DATA_MAPPER: Could not map data of non-primary key entity.` +
+                ` Entity [${Model.name}] does not have [PrimaryKey] field type`
+            );
+        }
+
+        // We'll use the chunking strategy for solving deep aggregated models
+        // First, we'll group the current databaseRowSet by the models identifier
+        let groupedRecordsByPk = lodash.groupBy(databaseRowSet, row => row[primaryKeyColumn]);
+
+        // Then we'll try to build each one of them, and repeat the steps recursively with aggregations
+        let mappingPromises = lodash.values(groupedRecordsByPk)
+            .map(groupedRowSet => this.mapModel(groupedRowSet, Model, schema))
+        ;
+
+
+        return Promise.all(mappingPromises);
     }
 }
