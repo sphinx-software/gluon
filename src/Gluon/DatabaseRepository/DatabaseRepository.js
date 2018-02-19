@@ -5,9 +5,7 @@ import lodash from "lodash";
  */
 export default class DatabaseRepository {
 
-    queryScope  = null;
-
-    usingScopes = [];
+    macroBuilder    = null;
 
     readConnection  = null;
 
@@ -62,15 +60,19 @@ export default class DatabaseRepository {
         ;
 
         // Apply the query scope
-        // this.makeQueryScopeContext().dispatch(query);
+        let macros = this.macroBuilder.context();
+
+        macros.modifyQuery(query);
 
         // Execute the query
         let rowSet = await query;
 
-        return rowSet.length ?
+        let entity = rowSet.length ?
             await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) :
             defaultEntityIfNotExisted
         ;
+
+        return macros.morphOne(entity);
     }
 
     async getOrFail(identifier) {
@@ -113,73 +115,62 @@ export default class DatabaseRepository {
 
 
     // -----------------------------------------------------------------------------------------------------------------
-    // query scope methods
+    // Query macros
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      *
-     * @param queryScope
+     * @param {MacroBuilder} macroBuilder
      * @return {DatabaseRepository}
      */
-    setQueryScope(queryScope) {
-        this.queryScope = queryScope;
+    setMacroBuilder(macroBuilder) {
+        this.macroBuilder = macroBuilder;
         return this;
     }
 
     /**
-     *
-     * @param scopeName
-     * @param scopeParameters
-     * @return {DatabaseRepository}
+     * Utility for initialize timestamps related macros
      */
-    withScope(scopeName, ...scopeParameters) {
-        this.usingScopes.push({scope: scopeName, parameters: scopeParameters});
-        return this;
-    }
-
-    /**
-     * Decorates new method for this repository
-     */
-    bootstrapQueryScope() {
-        this.queryScope.getScopes()
-            .map(scopeName => {
-                let willBeMethodName = 'with' + lodash.upperFirst(lodash.camelCase(scopeName));
-
-                // Check for property existence for avoiding
-                // property name collision.
-                if (Reflect.has(this, willBeMethodName)) {
-                    throw new Error(
-                        `E_QUERY_SCOPE_METHOD: Could not make new alias function for the query scope [${scopeName}]. `
-                        + `Property [${willBeMethodName}] is already defined`
-                    );
-                }
-
-                return {
-                    scopeName  : scopeName,
-                    methodName : willBeMethodName
-                }
-            })
-            .forEach(willBeDecoratedMethods => {
-
-                Reflect.defineProperty(this, willBeDecoratedMethods.methodName, {
-                    value: (...parameter) => this.withScope(willBeDecoratedMethods.scopeName, ...parameter)
-                })
-            })
+    macroTimestamp() {
+        this.macroBuilder
+            .when('latest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.updated_at`, 'desc'))
         ;
+
+        this.macroBuilder
+            .when('newest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.created_at`, 'desc'))
+        ;
+
+        this.macroBuilder
+            .when('earliest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.updated_at`))
+        ;
+
+        this.macroBuilder
+            .when('oldest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.created_at`))
+        ;
+
+        return this;
     }
 
     /**
-     * Gets a query context with given query scopes
-     * @return {QueryContext}
+     * Utility for initialize soft delete behavior
      */
-    makeQueryScopeContext() {
-        let context = this.queryScope.context(this.usingScopes);
+    macroSoftDelete() {
+        this.macroBuilder
+            .when('trashed')
+            .modifyQuery(query => query.whereNotNull(`${this.modelSchema.table}.deleted_at`))
+        ;
 
-        // Resets the scopes when get the context
-        this.usingScopes = [];
-        return context;
+        this.macroBuilder
+            .unless('trashed')
+            .modifyQuery(query => query.whereNull(`${this.modelSchema.table}.deleted_at`))
+        ;
+
+        return this;
     }
-
 
     // -----------------------------------------------------------------------------------------------------------------
     // Model methods
@@ -253,14 +244,11 @@ export default class DatabaseRepository {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * Template method for bootstrapping a repository
      *
-     * @return {DatabaseRepository}
      */
     bootstrap() {
-        // todo change this to query macro
-        // this.bootstrapQueryScope();
-
-        return this;
+        this.macroBuilder.decorateRepositoryMethods(this);
     }
 
     throwsEntityNotFound() {
