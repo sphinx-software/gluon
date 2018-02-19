@@ -29,7 +29,6 @@ class Post {
     @type(String)
     content = null;
 
-    @eager()
     @aggregations(Comment, 'post_id')
     comments = null;
 
@@ -147,28 +146,15 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
             posts: [
                 {
                     title: 'Fusion',
-                    content: 'The cute framework',
-                    comments: [
-                        {
-                            content: 'Is it cute?'
-                        },
-                        {
-                            content: 'Yes, sure!'
-                        },
-                        {
-                            content: 'But it needs to be more cute.'
-                        }
-                    ]
+                    content: 'The cute framework'
                 },
                 {
                     title: 'Gluon',
-                    content: 'The cute data modeler',
-                    comments: []
+                    content: 'The cute data modeler'
                 },
                 {
                     title: 'WaveFunction',
-                    content: 'The cute testing tool',
-                    comments: []
+                    content: 'The cute testing tool'
                 }
             ]
         });
