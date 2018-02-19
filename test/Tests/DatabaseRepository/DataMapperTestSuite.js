@@ -257,4 +257,9 @@ export default class DataMapperTestSuite extends TestSuite {
         assert.isEmpty(await results[0].multiAggregation());
         assert.isEmpty(await results[1].multiAggregation());
     }
+
+    @testCase()
+    async testMapperMapsModelsWithLazyLoadAggregation(context) {
+        context.skip();
+    }
 }
