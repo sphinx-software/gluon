@@ -4,7 +4,7 @@ import {assert} from "chai";
 
 import { DatabaseRepository, ModelQueryBuilder, MacroBuilder, EntitySchemaReader, NamingConvention, DataMapper } from "Gluon/DatabaseRepository";
 import { PrimaryKey, String, Hashed, Integer, Timestamps } from "Gluon/DataType";
-import { hidden, readonly, eager, aggregations, type } from "Gluon/Entity";
+import { hidden, readonly, eager, aggregations, type, EntityNotFoundError } from "Gluon/Entity";
 
 import RepositoryTestSuite from "../../RepositoryTestSuite";
 
@@ -194,11 +194,7 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         try {
             await this.repository.getOrFail(25121990);
         } catch (error) {
-            if(error.message.match('E_ENTITY_NOT_FOUND')) {
-                return;
-            }
-
-            throw new Error('Jeez! It\'s not my expected error');
+            return assert.instanceOf(error, EntityNotFoundError);
         }
 
         throw new Error('Jeez! It\'s not throwing!!!');

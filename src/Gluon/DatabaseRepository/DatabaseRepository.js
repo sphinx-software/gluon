@@ -1,4 +1,4 @@
-import lodash from "lodash";
+import EntityNotFoundError from "../Entity/EntityNotFoundError";
 
 /**
  * @implements RepositoryInterface
@@ -298,6 +298,6 @@ export default class DatabaseRepository {
      * Throws the Entity not found error
      */
     throwsEntityNotFound() {
-        throw new Error(`E_ENTITY_NOT_FOUND: Entity not found`);
+        throw new EntityNotFoundError(`E_ENTITY_NOT_FOUND: Entity not found`);
     }
 }
