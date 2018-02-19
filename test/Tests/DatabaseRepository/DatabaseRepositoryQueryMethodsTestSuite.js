@@ -74,13 +74,13 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
 
     async fusionActivated(context) {
 
+        await super.fusionActivated(context);
+
         this.container
             .bind(Credential, async () => new Credential())
             .bind(Post, async () => new Post())
             .bind(Comment, async () => new Comment())
         ;
-
-        this.dbm = await this.container.make(DatabaseManagerInterface);
 
         this.repository = new CredentialRepository()
             .setSchemaReader(new EntitySchemaReader(new NamingConvention()))
@@ -139,6 +139,13 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         let rikky = await this.repository.get(1);
 
         assert.instanceOf(rikky, Credential);
+
+        let rikkyPosts = await rikky.posts();
+        let firstPostComments = await rikkyPosts[0].comments();
+
+        assert.lengthOf(firstPostComments, 3);
+
+        assert.equal(firstPostComments[0].content, 'Is it cute?');
 
         assert.deepEqual(rikky.toJson(), {
             id: 1,
