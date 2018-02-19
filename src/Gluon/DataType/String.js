@@ -6,10 +6,16 @@ import PrimitiveType from "./PrimitiveType";
 export default class String extends PrimitiveType {
 
     static async fromStorage(storageValue) {
+        if (null === storageValue) {
+            return '';
+        }
         return storageValue.toString();
     }
 
     static async toStorage(modelValue) {
+        if (null === modelValue) {
+            return '';
+        }
         return modelValue.toString();
     }
 }

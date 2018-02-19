@@ -1,13 +1,11 @@
-import lodash from "lodash";
+import EntityNotFoundError from "../Entity/EntityNotFoundError";
 
 /**
  * @implements RepositoryInterface
  */
 export default class DatabaseRepository {
 
-    queryScope  = null;
-
-    usingScopes = [];
+    macroBuilder    = null;
 
     readConnection  = null;
 
@@ -51,26 +49,67 @@ export default class DatabaseRepository {
      * Get a model by its identifier
      *
      * @param identifier
-     * @param defaultEntityIfNotExisted
      * @return {Promise<*>}
      */
-    async get(identifier, defaultEntityIfNotExisted = null) {
+    async get(identifier) {
 
-        let query = this.readConnection.query();
+        let entity = await this.getOrNull(identifier);
 
-        this.modelQueryBuilder.makeSelect(this.modelSchema, query);
-
-        let rawResult = await query.where(this.modelSchema.primaryKey, '=', identifier);
-
-        if (!rawResult.length) {
-            return defaultEntityIfNotExisted;
-        }
-
-        return await this.dataMapper.mapModel(rawResult, this.Model);
+        return entity || this.returnWhenGetNull();
     }
 
+    /**
+     * Get a model by its identifier
+     * If no models found, return a default value
+     *
+     * @param identifier
+     * @param defaultWhenNull
+     * @return {Promise<*>}
+     */
+    async getOrDefault(identifier, defaultWhenNull = null) {
+        let entity = await this.getOrNull(identifier);
+
+        return entity || defaultWhenNull;
+    }
+
+    /**
+     * Get a model by its identifier
+     * If no models found, return null
+     *
+     * @param identifier
+     * @return {Promise<*>}
+     */
+    async getOrNull(identifier) {
+
+        let query = this.modelQueryBuilder
+            .makeSelect(this.modelSchema, this.readConnection.query())
+            .where(this.modelSchema.primaryKey, '=', identifier)
+        ;
+
+        // Apply the query scope
+        let macros = this.macroBuilder.context();
+
+        macros.modifyQuery(query);
+
+        // Execute the query
+        let rowSet = await query;
+
+        let entity = rowSet.length ?
+            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) : null
+        ;
+
+        return macros.morphOne(entity);
+    }
+
+    /**
+     * Get a model by its identifier
+     * If no models found, throw the entity not found error
+     *
+     * @param identifier
+     * @return {Promise<*>}
+     */
     async getOrFail(identifier) {
-        let entity = await this.get(identifier);
+        let entity = await this.getOrNull(identifier);
 
         if (!entity) {
             this.throwsEntityNotFound();
@@ -109,73 +148,62 @@ export default class DatabaseRepository {
 
 
     // -----------------------------------------------------------------------------------------------------------------
-    // query scope methods
+    // Query macros
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
      *
-     * @param queryScope
+     * @param {MacroBuilder} macroBuilder
      * @return {DatabaseRepository}
      */
-    setQueryScope(queryScope) {
-        this.queryScope = queryScope;
+    setMacroBuilder(macroBuilder) {
+        this.macroBuilder = macroBuilder;
         return this;
     }
 
     /**
-     *
-     * @param scopeName
-     * @param scopeParameters
-     * @return {DatabaseRepository}
+     * Utility for initialize timestamps related macros
      */
-    withScope(scopeName, ...scopeParameters) {
-        this.usingScopes.push({scope: scopeName, parameters: scopeParameters});
-        return this;
-    }
-
-    /**
-     * Decorates new method for this repository
-     */
-    bootstrapQueryScope() {
-        this.queryScope.getScopes()
-            .map(scopeName => {
-                let willBeMethodName = 'with' + lodash.upperFirst(lodash.camelCase(scopeName));
-
-                // Check for property existence for avoiding
-                // property name collision.
-                if (Reflect.has(this, willBeMethodName)) {
-                    throw new Error(
-                        `E_QUERY_SCOPE_METHOD: Could not make new alias function for the query scope [${scopeName}]. `
-                        + `Property [${willBeMethodName}] is already defined`
-                    );
-                }
-
-                return {
-                    scopeName  : scopeName,
-                    methodName : willBeMethodName
-                }
-            })
-            .forEach(willBeDecoratedMethods => {
-
-                Reflect.defineProperty(this, willBeDecoratedMethods.methodName, {
-                    value: (...parameter) => this.withScope(willBeDecoratedMethods.scopeName, ...parameter)
-                })
-            })
+    macroTimestamp() {
+        this.macroBuilder
+            .when('latest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.updated_at`, 'desc'))
         ;
+
+        this.macroBuilder
+            .when('newest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.created_at`, 'desc'))
+        ;
+
+        this.macroBuilder
+            .when('earliest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.updated_at`))
+        ;
+
+        this.macroBuilder
+            .when('oldest')
+            .modifyQuery(query => query.orderBy(`${this.modelSchema.table}.created_at`))
+        ;
+
+        return this;
     }
 
     /**
-     * Gets a query context with given query scopes
-     * @return {QueryContext}
+     * Utility for initialize soft delete behavior
      */
-    makeQueryScopeContext() {
-        let context = this.queryScope.context(this.usingScopes);
+    macroSoftDelete() {
+        this.macroBuilder
+            .when('trashed')
+            .modifyQuery(query => query.whereNotNull(`${this.modelSchema.table}.deleted_at`))
+        ;
 
-        // Resets the scopes when get the context
-        this.usingScopes = [];
-        return context;
+        this.macroBuilder
+            .unless('trashed')
+            .modifyQuery(query => query.whereNull(`${this.modelSchema.table}.deleted_at`))
+        ;
+
+        return this;
     }
-
 
     // -----------------------------------------------------------------------------------------------------------------
     // Model methods
@@ -249,16 +277,27 @@ export default class DatabaseRepository {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * Template method for bootstrapping a repository
      *
-     * @return {DatabaseRepository}
      */
     bootstrap() {
-        this.bootstrapQueryScope();
-
-        return this;
+        this.macroBuilder.decorateRepositoryMethods(this);
     }
 
+    /**
+     * Template method for specifying the null response from
+     * the get() method
+     *
+     * @return {Promise<*>}
+     */
+    async returnWhenGetNull() {
+        return null;
+    }
+
+    /**
+     * Throws the Entity not found error
+     */
     throwsEntityNotFound() {
-        throw new Error(`E_ENTITY_NOT_FOUND: Entity not found`);
+        throw new EntityNotFoundError(`E_ENTITY_NOT_FOUND: Entity not found`);
     }
 }

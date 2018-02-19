@@ -9,7 +9,7 @@ export class PrimitiveDataTypeInterface {
      * @param storageForm
      * @return {*}
      */
-    static sfromStorage(storageForm) { }
+    static fromStorage(storageForm) { }
 
     /**
      * Convert data to storage

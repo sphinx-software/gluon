@@ -3,7 +3,8 @@ import PrimitiveType from "../DataType/PrimitiveType";
 import PrimaryKey from "../DataType/PrimaryKey";
 
 /**
- * Reader for building SQL
+ * This class reads the decorated model's schema and gives instruction
+ * for other services (ModelQueryBuilder & DataMapper) know how to interact with the model
  */
 export default class EntitySchemaReader {
 
@@ -18,24 +19,22 @@ export default class EntitySchemaReader {
     /**
      *
      * @param Entity
-     * @return {{tables, fields, relationShips}}
+     * @return {{table: String, fields: {}, primaryKey: string|null, eagerAggregations: {}, lazyAggregations: {}}}
      */
     read(Entity) {
 
         let table  = this.getTable(Entity);
         let fields = this.getFields(Entity, table);
 
-        let foundPkFieldName = lodash.findKey(
-            Reflect.getMetadata('gluon.entity.fields', Entity),
-            metadata => metadata.type === PrimaryKey
-        );
+        let foundPkFieldName = lodash.findKey(fields, metadata => metadata.type === PrimaryKey);
 
-        if (!foundPkFieldName) {
-            throw new Error(`E_SCHEMA_READER: Entity [${Entity.name}] does not have primary key`)
+        let primaryKeyFieldWithoutTableName = null;
+
+        if (foundPkFieldName) {
+            primaryKeyFieldWithoutTableName =
+                Reflect.getMetadata('gluon.entity.fields', Entity)[foundPkFieldName].name ||
+                this.namingConvention.columnNameFromFieldName(foundPkFieldName);
         }
-
-        let primaryKeyFieldWithoutTableName = Reflect.getMetadata('gluon.entity.fields', Entity)[foundPkFieldName].name ||
-            this.namingConvention.columnNameFromFieldName(foundPkFieldName);
 
         let aggregations = this.getAggregations(Entity, table, primaryKeyFieldWithoutTableName);
         let eagerKeys    = Reflect.getMetadata('gluon.entity.eager', Entity) || [];
@@ -43,7 +42,7 @@ export default class EntitySchemaReader {
         return {
             table  : table,
             fields : fields,
-            primaryKey        : table + '.' + primaryKeyFieldWithoutTableName,
+            primaryKey        : foundPkFieldName ? fields[foundPkFieldName].name : null,
             eagerAggregations : lodash.pick(aggregations, eagerKeys),
             lazyAggregations  : lodash.omit(aggregations, eagerKeys)
         };
@@ -100,17 +99,9 @@ export default class EntitySchemaReader {
         let aggregations = Reflect.getMetadata('gluon.entity.aggregation', Entity) || {};
 
         return lodash.mapValues(aggregations, metadata => {
-            if (metadata.name) {
-                return {
-                    ...metadata,
-                    foreignKey: metadata.name,
-                    schema: this.read(metadata.entity)
-                }
-            }
-
             return {
                 ...metadata,
-                foreignKey: this.namingConvention.fkNameFromTableAndIdColumn(tableName, primaryKey),
+                foreignKey: metadata.name || this.namingConvention.fkNameFromTableAndIdColumn(tableName, primaryKey),
                 schema: this.read(metadata.entity)
             }
         })

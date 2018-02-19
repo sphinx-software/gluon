@@ -20,6 +20,13 @@ export default class EntitySchema {
     fields = {};
 
     /**
+     * The map of virtual fields (schema level access only)
+     *
+     * @type {{}}
+     */
+    virtualFields = {};
+
+    /**
      * List of hidden fields
      *
      * @type {Array}
@@ -62,21 +69,70 @@ export default class EntitySchema {
     }
 
     /**
+     * Set a virtual field to the schema.
+     * Virtual fields just helps on .toJson() method.
+     * It has no special ability.
+     *
+     * @param field
+     * @param value
+     * @return {EntitySchema}
+     */
+    setVirtual(field, value) {
+        this.virtualFields[field] = value;
+        return this;
+    }
+
+    /**
+     * Get a virtual field from the schema
+     *
+     * @param field
+     * @return {*}
+     */
+    virtual(field) {
+        return this.virtualFields[field];
+    }
+
+    /**
      * Jsonify the entity
      *
      * @param {*} entity
      */
     toJson(entity) {
-        return lodash.mapValues(
+        let realJson = lodash.mapValues(
             lodash.omit(this.fields, this.hiddenFields),
-            (metadata, fieldName) => {
-                if (entity[fieldName] !== null && entity[fieldName]['toJson']) {
-                    return entity[fieldName].toJson()
-                }
-
-                return entity[fieldName];
-            }
+            (metadata, fieldName) => this.castToJson(entity[fieldName])
         );
+
+        let virtualJson = lodash.mapValues(this.virtualFields, i => this.castToJson(i));
+
+        return {...realJson, ...virtualJson};
+    }
+
+    /**
+     * Cast generic type into a json serializable object
+     *
+     * @param item
+     * @return {*}
+     */
+    castToJson(item) {
+        // Prevent error when working with null, undefined
+        if (!item) {
+            return item;
+        }
+
+        if (lodash.isArray(item)) {
+            return item.map(i => this.castToJson(i));
+        }
+
+        if (lodash.isFunction(item)) {
+            return this.castToJson(item());
+        }
+
+        if (lodash.isFunction(item.toJson)) {
+            return item.toJson();
+        }
+
+        return item;
     }
 
     /**
@@ -124,15 +180,11 @@ export default class EntitySchema {
             return this;
         }
 
-        if (this.guardMode && this.hiddenFields.includes(field)) {
-            throw new Error(`E_SCHEMA_GUARD_MODE: Field [${field}] is hidden`);
-        }
-
-        if ('toJson' === field) {
+        if (!Reflect.has(entity, 'toJson') && 'toJson' === field) {
             return () => this.toJson(entity);
         }
 
-        if ('setFields' === field) {
+        if (!Reflect.has(entity, 'setFields') && 'setFields' === field) {
             return (fieldValues) => this.setFields(entity, fieldValues);
         }
 
@@ -160,6 +212,7 @@ export default class EntitySchema {
      * @return {*}
      */
     static applyFor(entity) {
+        // noinspection JSCheckFunctionSignatures
         return new Proxy(entity, new EntitySchema(...EntitySchema.inspect(entity.constructor)));
     }
 }
