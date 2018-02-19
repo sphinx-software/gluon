@@ -60,8 +60,15 @@ class Credential {
     timestamps = null;
 }
 
+class NoOne extends Credential {
+    username = 'I am no one ༼˵⊙︿⊙˵༽';
+}
+
 class CredentialRepository extends DatabaseRepository {
 
+    async returnWhenGetNull() {
+        return new NoOne();
+    }
 }
 
 export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryTestSuite {
@@ -129,7 +136,7 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
     }
 
     @testCase()
-    async testGetMethod() {
+    async testGetMethodShouldReturnModelProperly() {
         let rikky = await this.repository.get(1);
 
         assert.instanceOf(rikky, Credential);
@@ -165,5 +172,35 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
                 }
             ]
         });
+    }
+
+    @testCase()
+    async testGetMethodShouldReturnDefaultModelWhenNoModelFound() {
+        let shouldBeNoOne = await this.repository.get(25121990);
+
+        assert.instanceOf(shouldBeNoOne, NoOne);
+        assert.equal(shouldBeNoOne.username, 'I am no one ༼˵⊙︿⊙˵༽');
+    }
+
+    @testCase('Test getOrDefault method should return the given default value when no model found')
+    async testGetOrDefaultMethod() {
+        let shouldBeEqualDefault = await this.repository.getOrDefault(25121990, 'default');
+
+        assert(shouldBeEqualDefault, 'default');
+    }
+
+    @testCase('Test getOrFail method show throw the E_ENTITY_NOT_FOUND error when no model found')
+    async testGetOrFail() {
+        try {
+            await this.repository.getOrFail(25121990);
+        } catch (error) {
+            if(error.message.match('E_ENTITY_NOT_FOUND')) {
+                return;
+            }
+
+            throw new Error('Jeez! It\'s not my expected error');
+        }
+
+        throw new Error('Jeez! It\'s not throwing!!!');
     }
 }

@@ -49,10 +49,37 @@ export default class DatabaseRepository {
      * Get a model by its identifier
      *
      * @param identifier
-     * @param defaultEntityIfNotExisted
      * @return {Promise<*>}
      */
-    async get(identifier, defaultEntityIfNotExisted = null) {
+    async get(identifier) {
+
+        let entity = await this.getOrNull(identifier);
+
+        return entity || this.returnWhenGetNull();
+    }
+
+    /**
+     * Get a model by its identifier
+     * If no models found, return a default value
+     *
+     * @param identifier
+     * @param defaultWhenNull
+     * @return {Promise<*>}
+     */
+    async getOrDefault(identifier, defaultWhenNull = null) {
+        let entity = await this.getOrNull(identifier);
+
+        return entity || defaultWhenNull;
+    }
+
+    /**
+     * Get a model by its identifier
+     * If no models found, return null
+     *
+     * @param identifier
+     * @return {Promise<*>}
+     */
+    async getOrNull(identifier) {
 
         let query = this.modelQueryBuilder
             .makeSelect(this.modelSchema, this.readConnection.query())
@@ -68,15 +95,21 @@ export default class DatabaseRepository {
         let rowSet = await query;
 
         let entity = rowSet.length ?
-            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) :
-            defaultEntityIfNotExisted
+            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) : null
         ;
 
         return macros.morphOne(entity);
     }
 
+    /**
+     * Get a model by its identifier
+     * If no models found, throw the entity not found error
+     *
+     * @param identifier
+     * @return {Promise<*>}
+     */
     async getOrFail(identifier) {
-        let entity = await this.get(identifier);
+        let entity = await this.getOrNull(identifier);
 
         if (!entity) {
             this.throwsEntityNotFound();
@@ -251,6 +284,19 @@ export default class DatabaseRepository {
         this.macroBuilder.decorateRepositoryMethods(this);
     }
 
+    /**
+     * Template method for specifying the null response from
+     * the get() method
+     *
+     * @return {Promise<*>}
+     */
+    async returnWhenGetNull() {
+        return null;
+    }
+
+    /**
+     * Throws the Entity not found error
+     */
     throwsEntityNotFound() {
         throw new Error(`E_ENTITY_NOT_FOUND: Entity not found`);
     }
