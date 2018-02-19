@@ -29,10 +29,12 @@ export default class ModelQueryBuilder {
 
         lodash.forIn(modelSchema.eagerAggregations, (aggregation) => {
             let aggregatedModelSchema = aggregation.schema;
-            this.makeSelectWithoutFrom(aggregatedModelSchema, query);
+
             query.leftJoin(aggregatedModelSchema.table, function () {
                 this.on(modelSchema.primaryKey, '=', aggregatedModelSchema.table + '.' + aggregation.foreignKey);
             });
+
+            this.makeSelectWithoutFrom(aggregatedModelSchema, query);
         });
     }
 

@@ -114,7 +114,6 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
         assert(fromSpy.calledWith('models'));
     }
 
-    @testCase()
     testQueryBuilderMakeSelectQueryWithAggregation() {
 
         let query = this.connection.query();

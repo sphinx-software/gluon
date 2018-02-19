@@ -1,25 +1,21 @@
-import {testCase} from "WaveFunction";
-import RepositoryTestSuite from "../../RepositoryTestSuite";
 import {DatabaseManagerInterface} from "Fusion";
+import {testCase} from "WaveFunction";
 import {assert} from "chai";
 
-import {
-    DatabaseRepository,
-    ModelQueryBuilder,
-    MacroBuilder,
-    PrimaryKey,
-    String,
-    Hashed,
-    Integer,
-    EntitySchemaReader,
-    NamingConvention,
-    Timestamps,
-    DataMapper,
-    hidden,
-    eager,
-    aggregations,
-    type
-} from "Gluon";
+import { DatabaseRepository, ModelQueryBuilder, MacroBuilder, EntitySchemaReader, NamingConvention, DataMapper } from "Gluon/DatabaseRepository";
+import { PrimaryKey, String, Hashed, Integer, Timestamps } from "Gluon/DataType";
+import { hidden, readonly, eager, aggregations, type } from "Gluon/Entity";
+
+import RepositoryTestSuite from "../../RepositoryTestSuite";
+
+class Comment {
+    @hidden()
+    @type(PrimaryKey)
+    id = null;
+
+    @type(String)
+    content = null;
+}
 
 class Post {
 
@@ -33,7 +29,12 @@ class Post {
     @type(String)
     content = null;
 
+    @eager()
+    @aggregations(Comment, 'post_id')
+    comments = null;
+
     @hidden()
+    @readonly()
     @type(Integer)
     credentialsId = null;
 }
@@ -69,6 +70,7 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         this.container
             .bind(Credential, async () => new Credential())
             .bind(Post, async () => new Post())
+            .bind(Comment, async () => new Comment())
         ;
 
         this.dbm = await this.container.make(DatabaseManagerInterface);
@@ -101,17 +103,28 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
             { credentials_id: 1, title: 'Fusion', content: 'The cute framework' },
             { credentials_id: 1, title: 'Gluon', content: 'The cute data modeller' },
             { credentials_id: 1, title: 'WaveFunction', content: 'The cute testing tool' },
-        ])
+        ]);
+    }
+
+    async seedComments() {
+        await this.dbm.from('comments').truncate();
+        await this.dbm.from('comments').insert([
+            { commenter_id: 2, post_id: 1, content: 'Is it cute?' },
+            { commenter_id: 1, post_id: 1, content: 'Yes, sure!' },
+            { commenter_id: 3, post_id: 1, content: 'But it needs to be more cute.' },
+        ]);
     }
 
     async beforeEach(context) {
         await this.seedCredentials();
         await this.seedPosts();
+        await this.seedComments();
     }
 
     async afterEach(context) {
         await this.dbm.from('credentials').truncate();
         await this.dbm.from('posts').truncate();
+        await this.dbm.from('comments').truncate();
     }
 
     @testCase()
@@ -123,5 +136,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
 
         let rikkyPosts = await rikky.posts();
         assert.lengthOf(rikkyPosts, 3);
+
     }
 }
