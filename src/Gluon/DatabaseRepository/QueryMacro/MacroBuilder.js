@@ -44,7 +44,7 @@ export default class MacroBuilder {
 
         let usingMacros = this.specifiedMacros.map(macroDefinition => {
             if (!lodash.has(this.positiveMacros, macroDefinition.name)) {
-                throw new Error(`ERROR_MACRO: Macro [${macroDefinition.name}] is not supported`);
+                throw new Error(`E_MACRO_NOT_SUPPORTED: Macro [${macroDefinition.name}] is not supported`);
             }
 
             macroDefinition.macro = this.positiveMacros[macroDefinition.name];
@@ -55,11 +55,11 @@ export default class MacroBuilder {
             }
         });
 
-        let specifiedMacrosName = this.specifiedMacros.map(macroDefinition => macroDefinition.name);
+        let specifiedMacroNames = this.specifiedMacros.map(macroDefinition => macroDefinition.name);
 
         let usingNegativeMacros = lodash.values(lodash.pickBy(
             this.negativeMacros,
-            (macro, macroName) => !specifiedMacrosName.includes(macroName))
+            (macro, macroName) => !specifiedMacroNames.includes(macroName))
         ).map(macro => {
             return {
                 macro: macro,
@@ -132,7 +132,30 @@ export default class MacroBuilder {
         return macro;
     }
 
-    decorateRepositoryMethods() {
-        // todo
+    /**
+     * Decorate extra withX methods on the target repository,
+     * where X is the macro name that will be used.
+     *
+     * @param targetRepository
+     */
+    decorateRepositoryMethods(targetRepository) {
+
+        let macroNames = lodash.keys(this.positiveMacros);
+
+        macroNames.map(macroName => {
+            let maybeMethodName = 'with' + lodash.upperFirst(lodash.camelCase(macroName));
+
+            if (lodash.has(targetRepository, maybeMethodName)) {
+                throw new Error(`E_MACRO_METHOD_EXISTED: Could not decorate method [${maybeMethodName}] ` +
+                    `on repository [${targetRepository.constructor.name}], property is already defined`);
+            }
+
+            return {willBeMethodName: maybeMethodName, macroName: macroName};
+        }).forEach(willBeDecoratedMethod => {
+            targetRepository[willBeDecoratedMethod.willBeMethodName] = (...parameters) => {
+                this.use(willBeDecoratedMethod.macroName, ...parameters);
+                return targetRepository;
+            }
+        });
     }
 }
