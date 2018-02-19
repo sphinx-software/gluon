@@ -139,12 +139,13 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
                 "`deep_aggregated_models`.`some_id_field` as `deep_aggregated_models.some_id_field`, " +
                 "`deep_aggregated_models`.`created_at` as `deep_aggregated_models.created_at`, " +
                 "`deep_aggregated_models`.`updated_at` as `deep_aggregated_models.updated_at` " +
-            "from `customized_aggregated_models` left join `models` " +
-                "on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
-            "left join `deep_aggregated_models` " +
-                "on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field` " +
-            "left join `other_models` " +
-                "on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field`"
+            "from " +
+                "`customized_aggregated_models` left join `models` " +
+                    "on `customized_aggregated_models`.`id_field` = `models`.`my_fk_field` " +
+                "left join `other_models` " +
+                    "on `customized_aggregated_models`.`id_field` = `other_models`.`customized_aggregated_models_id_field` " +
+                "left join `deep_aggregated_models` " +
+                    "on `other_models`.`my_pk_field` = `deep_aggregated_models`.`other_models_my_pk_field`"
         ;
 
         assert.equal(sql.sql, expectedSql);
