@@ -55,6 +55,7 @@ class Credential {
     @type(Hashed)
     password = null;
 
+    @hidden()
     @type(Timestamps)
     timestamps = null;
 }
@@ -101,7 +102,7 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         await this.dbm.from('posts').truncate();
         await this.dbm.from('posts').insert([
             { credentials_id: 1, title: 'Fusion', content: 'The cute framework' },
-            { credentials_id: 1, title: 'Gluon', content: 'The cute data modeller' },
+            { credentials_id: 1, title: 'Gluon', content: 'The cute data modeler' },
             { credentials_id: 1, title: 'WaveFunction', content: 'The cute testing tool' },
         ]);
     }
@@ -132,10 +133,37 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
         let rikky = await this.repository.get(1);
 
         assert.instanceOf(rikky, Credential);
-        assert.equal(rikky.username, 'rikky');
 
-        let rikkyPosts = await rikky.posts();
-        assert.lengthOf(rikkyPosts, 3);
-
+        assert.deepEqual(rikky.toJson(), {
+            id: 1,
+            username: 'rikky',
+            posts: [
+                {
+                    title: 'Fusion',
+                    content: 'The cute framework',
+                    comments: [
+                        {
+                            content: 'Is it cute?'
+                        },
+                        {
+                            content: 'Yes, sure!'
+                        },
+                        {
+                            content: 'But it needs to be more cute.'
+                        }
+                    ]
+                },
+                {
+                    title: 'Gluon',
+                    content: 'The cute data modeler',
+                    comments: []
+                },
+                {
+                    title: 'WaveFunction',
+                    content: 'The cute testing tool',
+                    comments: []
+                }
+            ]
+        });
     }
 }
