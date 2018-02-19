@@ -184,7 +184,7 @@ export default class EntitySchema {
             return () => this.toJson(entity);
         }
 
-        if (!Reflect.has(entity, 'setFields') &&'setFields' === field) {
+        if (!Reflect.has(entity, 'setFields') && 'setFields' === field) {
             return (fieldValues) => this.setFields(entity, fieldValues);
         }
 
