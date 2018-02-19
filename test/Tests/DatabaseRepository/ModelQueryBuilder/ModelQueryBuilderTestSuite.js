@@ -3,7 +3,7 @@ import {
     ModelQueryBuilder,
     NamingConvention, type,
     String, eager, aggregation, aggregations, model,
-    Hashed, Json, PrimaryKey, SoftDelete, Timestamps,
+    Hashed, Json, PrimaryKey, Timestamps,
 
     EntitySchemaReader
 } from "Gluon";
