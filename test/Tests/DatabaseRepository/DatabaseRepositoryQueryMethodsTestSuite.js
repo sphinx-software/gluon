@@ -76,6 +76,43 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
 
         await super.fusionActivated(context);
 
+        await this.makeTables();
+
+        await this.prepareRepository(context);
+    }
+
+
+    async makeTables() {
+        let schema = this.dbm.connection().knexConnection.schema;
+
+        await schema.dropTableIfExists('credentials');
+        await schema.dropTableIfExists('posts');
+        await schema.dropTableIfExists('comments');
+
+        await schema.createTable('credentials', table => {
+            table.increments();
+            table.string('username');
+            table.string('password');
+            table.integer('created_at');
+            table.integer('updated_at');
+        });
+
+        await schema.createTable('posts', table => {
+            table.increments();
+            table.string('title');
+            table.string('content');
+            table.string('credentials_id');
+        });
+
+        await schema.createTable('comments', table => {
+            table.increments();
+            table.integer('post_id');
+            table.integer('commenter_id');
+            table.string('content');
+        });
+    }
+
+    async prepareRepository() {
         this.container
             .bind(Credential, async () => new Credential())
             .bind(Post, async () => new Post())
@@ -96,7 +133,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
     }
 
     async seedCredentials() {
-        await this.dbm.from('credentials').truncate();
         await this.dbm.from('credentials').insert([
             { username: 'rikky', created_at: new Date().getTime(), updated_at: new Date().getTime() },
             { username: 'lucy' , created_at: new Date().getTime(), updated_at: new Date().getTime() },
@@ -105,7 +141,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
     }
 
     async seedPosts() {
-        await this.dbm.from('posts').truncate();
         await this.dbm.from('posts').insert([
             { credentials_id: 1, title: 'Fusion', content: 'The cute framework' },
             { credentials_id: 1, title: 'Gluon', content: 'The cute data modeler' },
@@ -114,7 +149,6 @@ export default class DatabaseRepositoryQueryMethodsTestSuite extends RepositoryT
     }
 
     async seedComments() {
-        await this.dbm.from('comments').truncate();
         await this.dbm.from('comments').insert([
             { commenter_id: 2, post_id: 1, content: 'Is it cute?' },
             { commenter_id: 1, post_id: 1, content: 'Yes, sure!' },

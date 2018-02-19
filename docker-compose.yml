@@ -1,12 +1,30 @@
 version: "3"
 
 services:
-    mysql:
-        image: "mysql:5.5"
-        ports:
-          - "3306:3306"
-        environment:
-          - MYSQL_RANDOM_ROOT_PASSWORD=true
-          - MYSQL_USER=gluon
-          - MYSQL_PASSWORD=gluon
-          - MYSQL_DATABASE=gluon
+  build:
+    build: "."
+    volumes:
+      - .:/gluon
+      - /gluon/node_modules
+    command: npm run build
+
+  test:
+    build: "."
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - .:/gluon
+      - /gluon/node_modules
+    command: npm run test
+    links:
+      - mysql
+
+  mysql:
+    image: "mysql:5.5"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=gluon
+      - MYSQL_PASSWORD=gluon
+      - MYSQL_DATABASE=gluon
