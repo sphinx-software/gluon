@@ -2,5 +2,5 @@ export MacroBuilderDecorationTestSuite from "./QueryMacro/MacroBuilderDecoration
 export MacroBuilderTestSuite from "./QueryMacro/MacroBuilderTestSuite";
 export DataMapperTestSuite from "./DataMapperTestSuite";
 export ModelQueryBuilderTestSuite from "./ModelQueryBuilder/ModelQueryBuilderTestSuite";
-export DatabaseRepositoryQueryMethodsTestSuite from "./DatabaseRepositoryQueryMethodsTestSuite";
+export ModelQueryEngineTestSuite from "./ModelQueryEngineTestSuite";
 export EntitySchemaReaderTestSuite from "./EntitySchemaReaderTestSuite";

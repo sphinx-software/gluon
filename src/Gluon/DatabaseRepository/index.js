@@ -1,3 +1,4 @@
+export ModelQueryEngine from "./ModelQueryEngine/ModelQueryEngine";
 export MacroBuilder from "./QueryMacro/MacroBuilder";
 export EntitySchemaReader from "./EntitySchemaReader";
 export ModelQueryBuilder from "./ModelQueryBuilder/ModelQueryBuilder";

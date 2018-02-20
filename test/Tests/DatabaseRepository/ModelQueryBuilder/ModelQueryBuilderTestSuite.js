@@ -12,7 +12,6 @@ import {testCase} from "WaveFunction";
 import sinon from "sinon";
 import {assert} from "chai";
 import RepositoryTestSuite from "../../../RepositoryTestSuite";
-import {DatabaseManagerInterface} from "Fusion";
 
 class Bar {
     @type(Json)
@@ -87,15 +86,15 @@ class AggregatedModel {
 export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
 
     async fusionActivated(context) {
+        await super.fusionActivated(context);
         this.reader            = new EntitySchemaReader(new NamingConvention());
-        this.connection        = (await this.container.make(DatabaseManagerInterface)).connection();
         this.modelQueryBuilder = new ModelQueryBuilder();
     }
 
     @testCase()
     testQueryBuilderMakeSelectQueryWithoutAggregation() {
 
-        let query     = this.connection.query();
+        let query     = this.dbm.connection().query();
 
         let selectSpy = sinon.stub(query, 'select').returns(query);
         let fromSpy   = sinon.stub(query, 'from').returns(query);
@@ -117,7 +116,7 @@ export default class ModelQueryBuilderTestSuite extends RepositoryTestSuite {
     @testCase()
     testQueryBuilderMakeSelectQueryWithAggregation() {
 
-        let query = this.connection.query();
+        let query = this.dbm.connection().query();
 
         this.modelQueryBuilder.makeSelect(this.reader.read(AggregatedModel), query);
 

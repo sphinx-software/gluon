@@ -7,8 +7,10 @@ services:
       - .:/gluon
       - /gluon/node_modules
     command: npm run build
+    links:
+      - mysql
 
-  test:
+  dev:
     build: "."
     environment:
       - NODE_ENV=test
