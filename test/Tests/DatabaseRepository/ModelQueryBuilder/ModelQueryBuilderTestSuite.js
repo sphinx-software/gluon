@@ -1,10 +1,8 @@
-
 import {
     ModelQueryBuilder,
     NamingConvention, type,
     String, eager, aggregation, aggregations, model,
     Hashed, Json, PrimaryKey, Timestamps,
-
     EntitySchemaReader
 } from "Gluon";
 
