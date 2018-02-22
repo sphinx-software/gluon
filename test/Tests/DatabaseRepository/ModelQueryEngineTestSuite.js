@@ -31,6 +31,7 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
                 { commenter_id: 2, post_id: 1, content: 'Is it cute?' },
                 { commenter_id: 1, post_id: 1, content: 'Yes, sure!' },
                 { commenter_id: 3, post_id: 1, content: 'But it needs to be more cute.' },
+                { commenter_id: 1, post_id: 1, content: 'Okay, We\'ll try our best.' },
             ]
         }
     }
@@ -41,7 +42,7 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
         let rikky = await this.engine.getOne(
             Credential,
             this.schema,
-            (query) => query.where(this.schema.primaryKey, 1)
+            query => query.where(this.schema.primaryKey, 1)
         );
 
         let posts    = await rikky.posts();
@@ -72,6 +73,46 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
                 }
             ]
         });
+    }
+
+    @testCase()
+    async testGetMethodShouldReturnModelProperlyWithGivenAggregations() {
+        let rikky = await this.engine.getOne(
+            Credential,
+            this.schema,
+            query => query.where(this.schema.primaryKey, 1),
+            ['comments']
+        );
+
+
+        assert.deepEqual(rikky.toJson(), {
+            id: 1,
+            username: 'rikky',
+
+            posts: [
+                {
+                    title: 'Fusion',
+                    content: 'The cute framework'
+                },
+                {
+                    title: 'Gluon',
+                    content: 'The cute data modeler'
+                },
+                {
+                    title: 'WaveFunction',
+                    content: 'The cute testing tool'
+                }
+            ],
+
+            comments: [
+                {
+                    content: 'Yes, sure!'
+                },
+                {
+                    content: 'Okay, We\'ll try our best.'
+                }
+            ]
+        })
     }
 
 
