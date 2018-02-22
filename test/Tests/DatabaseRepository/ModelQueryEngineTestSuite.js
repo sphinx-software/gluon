@@ -37,14 +37,9 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
     }
 
     @testCase()
-    async testGetMethodShouldReturnModelProperly() {
+    async testGetOneMethodShouldReturnModelProperly() {
 
-        let rikky = await this.engine.getOne(
-            Credential,
-            this.schema,
-            query => query.where(this.schema.primaryKey, 1)
-        );
-
+        let rikky    = await this.engine.getOne(Credential, this.schema, query => query);
         let posts    = await rikky.posts();
         let comments = await rikky.comments();
 
@@ -76,14 +71,13 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
     }
 
     @testCase()
-    async testGetMethodShouldReturnModelProperlyWithGivenAggregations() {
+    async testGetOneMethodShouldReturnModelProperlyWithGivenAggregations() {
         let rikky = await this.engine.getOne(
             Credential,
             this.schema,
-            query => query.where(this.schema.primaryKey, 1),
+            query => query,
             ['comments']
         );
-
 
         assert.deepEqual(rikky.toJson(), {
             id: 1,

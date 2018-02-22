@@ -10,9 +10,10 @@ export default class ModelQueryBuilder {
      *
      * @param modelSchema
      * @param query
+     * @param aggregations
      */
-    makeSelect(modelSchema, query) {
-        this.makeSelectWithoutFrom(modelSchema, query);
+    makeSelect(modelSchema, query, aggregations = []) {
+        this.makeSelectWithoutFrom(modelSchema, query, aggregations);
         return query.from(modelSchema.table);
     }
 
@@ -20,14 +21,19 @@ export default class ModelQueryBuilder {
      *
      * @param modelSchema
      * @param query
+     * @param aggregations
      */
-    makeSelectWithoutFrom(modelSchema, query) {
+    makeSelectWithoutFrom(modelSchema, query, aggregations = []) {
         let resolvedFields  = this.resolveFieldsFromSchema(modelSchema.fields);
         let fieldsWithAlias = lodash.zipObject(resolvedFields, resolvedFields);
 
         query.select(fieldsWithAlias);
 
-        lodash.forIn(modelSchema.eagerAggregations, (aggregation) => {
+        lodash.forIn(modelSchema.eagerAggregations, aggregation => {
+            this.makeJoinWithAggregation(aggregation, modelSchema, query);
+        });
+
+        lodash.forIn(lodash.pick(modelSchema.lazyAggregations, aggregations), aggregation => {
             this.makeJoinWithAggregation(aggregation, modelSchema, query);
         });
     }

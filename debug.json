@@ -1,0 +1,112 @@
+{
+  "1": [
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 1,
+      "posts.title": "Fusion",
+      "posts.content": "The cute framework",
+      "posts.credentials_id": "1",
+      "comments.id": 2,
+      "comments.content": "Yes, sure!"
+    },
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 1,
+      "posts.title": "Fusion",
+      "posts.content": "The cute framework",
+      "posts.credentials_id": "1",
+      "comments.id": 4,
+      "comments.content": "Okay, We'll try our best."
+    },
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 2,
+      "posts.title": "Gluon",
+      "posts.content": "The cute data modeler",
+      "posts.credentials_id": "1",
+      "comments.id": 2,
+      "comments.content": "Yes, sure!"
+    },
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 2,
+      "posts.title": "Gluon",
+      "posts.content": "The cute data modeler",
+      "posts.credentials_id": "1",
+      "comments.id": 4,
+      "comments.content": "Okay, We'll try our best."
+    },
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 3,
+      "posts.title": "WaveFunction",
+      "posts.content": "The cute testing tool",
+      "posts.credentials_id": "1",
+      "comments.id": 2,
+      "comments.content": "Yes, sure!"
+    },
+    {
+      "credentials.id": 1,
+      "credentials.username": "rikky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": 3,
+      "posts.title": "WaveFunction",
+      "posts.content": "The cute testing tool",
+      "posts.credentials_id": "1",
+      "comments.id": 4,
+      "comments.content": "Okay, We'll try our best."
+    }
+  ],
+  "2": [
+    {
+      "credentials.id": 2,
+      "credentials.username": "lucy",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": null,
+      "posts.title": null,
+      "posts.content": null,
+      "posts.credentials_id": null,
+      "comments.id": 1,
+      "comments.content": "Is it cute?"
+    }
+  ],
+  "3": [
+    {
+      "credentials.id": 3,
+      "credentials.username": "rocky",
+      "credentials.password": null,
+      "credentials.created_at": 2147483647,
+      "credentials.updated_at": 2147483647,
+      "posts.id": null,
+      "posts.title": null,
+      "posts.content": null,
+      "posts.credentials_id": null,
+      "comments.id": 3,
+      "comments.content": "But it needs to be more cute."
+    }
+  ]
+}

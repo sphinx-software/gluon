@@ -28,17 +28,7 @@ export default class ModelQueryEngine {
      * @return {Promise<*>}
      */
     async getOne(Model, schema, queryHook, aggregations = []) {
-        let query = this.builder.makeSelect(schema, queryHook(this.connection.query()));
-
-        // Query against lazy aggregations selection
-        aggregations.forEach(aggregationName => {
-            let aggregation = schema.lazyAggregations[aggregationName];
-
-            if (!aggregationName) {
-                throw new Error(`E_QUERY_ENGINE: Lazy aggregation [${aggregationName}] is not specified`);
-            }
-            this.builder.makeJoinWithAggregation(aggregation, schema, query);
-        });
+        let query = this.builder.makeSelect(schema, queryHook(this.connection.query()), aggregations);
 
         let rowSet = await query;
 
@@ -46,10 +36,7 @@ export default class ModelQueryEngine {
             return null;
         }
 
-        let model = await this.mapper.mapModel(rowSet, Model, schema);
-
-        // Map model against lazy aggregations selections
-        await this.mapper.mapModelWithAggregation(rowSet, model, lodash.pick(schema.lazyAggregations, aggregations));
+        let model = await this.mapper.mapModel(rowSet, Model, schema, aggregations);
 
         this.resolveLazyAggregations(model, schema, aggregations);
 
@@ -61,19 +48,22 @@ export default class ModelQueryEngine {
      *
      * @param {Function|constructor} Model
      * @param {*} schema
-     * @param queryHook
+     * @param {function} queryHook
+     * @param {array} aggregations
      * @return {Promise<*>}
      */
-    async getMany(Model, schema, queryHook) {
-        let rowSet = await this.builder.makeSelect(schema, queryHook(this.connection.query()));
+    async getMany(Model, schema, queryHook, aggregations = []) {
+        let query = this.builder.makeSelect(schema, queryHook(this.connection.query()), aggregations);
+
+        let rowSet = await query;
 
         if (!rowSet.length) {
             return [];
         }
 
-        let models = await this.mapper.mapModels(rowSet, Model, schema);
+        let models = await this.mapper.mapModels(rowSet, Model, schema, aggregations);
 
-        models.forEach(model => this.resolveLazyAggregations(model, schema));
+        models.forEach(model => this.resolveLazyAggregations(model, schema, aggregations));
 
         return models;
     }

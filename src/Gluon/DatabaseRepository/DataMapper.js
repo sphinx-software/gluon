@@ -118,21 +118,27 @@ export default class DataMapper {
      * @param databaseRowSet
      * @param Model
      * @param schema
+     * @param aggregations
      * @return {Promise<{}>}
      */
-    async mapModel(databaseRowSet, Model, schema) {
+    async mapModel(databaseRowSet, Model, schema, aggregations = []) {
 
         if (!databaseRowSet.length) {
             return null;
         }
 
-        // In this situation, every rowSet is referring to one unique model.
-        // So for mapping itself without aggregation, we can blindly pick the first row
         let databaseRow = databaseRowSet[0];
+
+        // In this situation, ensure rowSet is referring to one unique model.
+        // So for mapping itself without aggregation, we can blindly pick the first row
+        let filteredDatabaseRowSet = databaseRowSet.filter(row => row[schema.primaryKey] === databaseRow[schema.primaryKey]);
 
         let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
 
-        return await this.mapModelWithAggregation(databaseRowSet, model, schema.eagerAggregations);
+        await this.mapModelWithAggregation(filteredDatabaseRowSet, model, schema.eagerAggregations);
+        await this.mapModelWithAggregation(filteredDatabaseRowSet, model, lodash.pick(schema.lazyAggregations, aggregations));
+
+        return model;
     }
 
     /**
@@ -141,9 +147,10 @@ export default class DataMapper {
      * @param databaseRowSet
      * @param Model
      * @param schema
+     * @param aggregations
      * @return {Promise<*>}
      */
-    mapModels(databaseRowSet, Model, schema) {
+    mapModels(databaseRowSet, Model, schema, aggregations = []) {
 
         // Distinct the rowSet by the aggregated model id:
         let primaryKeyColumn = schema.primaryKey;
@@ -162,7 +169,7 @@ export default class DataMapper {
 
         // Then we'll try to build each one of them, and repeat the steps recursively with aggregations
         let mappingPromises = lodash.values(groupedRecordsByPk)
-            .map(groupedRowSet => this.mapModel(groupedRowSet, Model, schema))
+            .map(groupedRowSet => this.mapModel(groupedRowSet, Model, schema, aggregations))
         ;
 
 
