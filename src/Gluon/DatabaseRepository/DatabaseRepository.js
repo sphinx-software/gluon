@@ -33,12 +33,23 @@ export default class DatabaseRepository {
     // -----------------------------------------------------------------------------------------------------------------
     // implementation methods
     // -----------------------------------------------------------------------------------------------------------------
-
     create(modelProperties) {
         // todo
     }
 
     createBlindly(modelProperties) {
+        // todo
+    }
+
+    removeBlindly(identifier) {
+        // todo
+    }
+
+    restore(identifier) {
+        // todo
+    }
+
+    restoreBlindly() {
         // todo
     }
 
@@ -198,18 +209,6 @@ export default class DatabaseRepository {
      */
     async firstOrFail(condition) {
         return await this.firstOrNull(condition) || this.throwsEntityNotFound();
-    }
-
-    removeBlindly(identifier) {
-        // todo
-    }
-
-    restore(identifier) {
-
-    }
-
-    restoreBlindly() {
-
     }
 
 
