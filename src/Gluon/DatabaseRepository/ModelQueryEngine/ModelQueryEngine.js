@@ -51,7 +51,7 @@ export default class ModelQueryEngine {
         // Map model against lazy aggregations selections
         await this.mapper.mapModelWithAggregation(rowSet, model, lodash.pick(schema.lazyAggregations, aggregations));
 
-        this.resolveLazyAggregations(model, schema);
+        this.resolveLazyAggregations(model, schema, aggregations);
 
         return model;
     }
@@ -83,10 +83,11 @@ export default class ModelQueryEngine {
      *
      * @param model
      * @param schema
+     * @param ignored
      */
-    resolveLazyAggregations(model, schema) {
+    resolveLazyAggregations(model, schema, ignored = []) {
         model.schema.unguard();
-        lodash.forIn(schema.lazyAggregations, (aggregation, name) => {
+        lodash.forIn(lodash.omit(schema.lazyAggregations, ignored), (aggregation, name) => {
 
             let primaryKeyField = lodash.findKey(schema.fields, field => field.type === PrimaryKey);
             let parameters      = [
