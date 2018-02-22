@@ -6,12 +6,28 @@ import lodash from "lodash";
  */
 export default class DatabaseRepository {
 
+    /**
+     * @protected
+     * @type {null}
+     */
     macroBuilder    = null;
 
+    /**
+     * @protected
+     * @type {null}
+     */
     Model           = null;
 
+    /**
+     * @protected
+     * @type {{}}
+     */
     modelSchema     = {};
 
+    /**
+     * @protected
+     * @type {Array}
+     */
     aggregations    = [];
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -58,10 +74,7 @@ export default class DatabaseRepository {
      * @return {Promise<*>}
      */
     async get(identifier) {
-
-        let entity = await this.getOrNull(identifier);
-
-        return entity || await this.returnWhenGetNull();
+        return await this.getOrDefault(identifier, await this.returnWhenGetNull());
     }
 
     /**
@@ -115,20 +128,76 @@ export default class DatabaseRepository {
         return entity || this.throwsEntityNotFound();
     }
 
-    find(condition) {
-        // todo
+    /**
+     *
+     * @param {QueryableInterface|{apply: function}|function} condition
+     * @return {Promise<[]>}
+     */
+    async find(condition) {
+        let macros   = this.macroBuilder.context();
+        let entities = await this.engine.getMany(
+            this.Model,
+            this.modelSchema,
+            query => {
+                lodash.isFunction(condition) ? condition(query) : condition.apply(query);
+                return macros.modifyQuery(query);
+            },
+            this.getSpecifiedAggregations()
+        );
+
+        return macros.morphList(entities);
     }
 
-    findOrFail(condition, errorWhenFail) {
-        // todo
+    /**
+     *
+     * @param {QueryableInterface|{apply: function}|function} condition
+     * @return {Promise<*>}
+     */
+    async first(condition) {
+        return await this.firstOrDefault(condition, await this.returnWhenGetNull());
     }
 
-    first(condition) {
-
+    /**
+     *
+     * @param {QueryableInterface|{apply: function}|function} condition
+     * @param {*} defaultWhenNotFound
+     * @return {Promise<*>}
+     */
+    async firstOrDefault(condition, defaultWhenNotFound = null) {
+        return await this.firstOrNull(condition) || defaultWhenNotFound;
     }
 
-    firstOrFail(condition, errorWhenFail) {
-        // todo
+    /**
+     *
+     * @param {QueryableInterface|{apply: function}|function} condition
+     * @return {Promise<*>}
+     */
+    async firstOrNull(condition) {
+        let macros   = this.macroBuilder.context();
+        let entity   = await this.engine.getOne(
+            this.Model,
+            this.modelSchema,
+            query => {
+                lodash.isFunction(condition) ? condition(query) : condition.apply(query);
+                return macros.modifyQuery(query);
+            },
+            this.getSpecifiedAggregations()
+        );
+
+        if (!entity) {
+            return null;
+        }
+
+        return macros.morphOne(entity);
+    }
+
+    /**
+     *
+     * @param {QueryableInterface|{apply: function}|function} condition
+     * @return {Promise<*>}
+     */
+    async firstOrFail(condition) {
+        return await this.firstOrNull(condition) || this.throwsEntityNotFound();
     }
 
     removeBlindly(identifier) {
@@ -246,6 +315,7 @@ export default class DatabaseRepository {
     }
 
     /**
+     * @protected
      * Get the specified aggregations given by the user
      *
      * @return {Array}
@@ -270,6 +340,8 @@ export default class DatabaseRepository {
     }
 
     /**
+     * @protected
+     *
      * Template method for specifying the null response from
      * the get() method
      *
@@ -280,6 +352,7 @@ export default class DatabaseRepository {
     }
 
     /**
+     * @protected
      * Throws the Entity not found error
      */
     throwsEntityNotFound() {

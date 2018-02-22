@@ -61,30 +61,19 @@ export default class DatabaseRepositoryTestSuite extends RepositoryTestSuite {
     }
 
     @testCase()
-    async testGetMethods() {
+    async testGetMethod() {
         let rikky = await this.repository.get(1);
 
         assert.equal(rikky.id, 1);
         assert.equal(rikky.username, 'rikky');
     }
-
-    @testCase()
-    async testAllMethod() {
-        let credentials = await this.repository.all();
-
-        assert.lengthOf(credentials, 3);
-        assert.equal(credentials[0].username, 'rikky');
-        assert.equal(credentials[1].username, 'lucy');
-        assert.equal(credentials[2].username, 'rocky');
-    }
-
-
     @testCase()
     async testGetMethodShouldReturnDefaultModelWhenNoModelFound() {
         let shouldBeNoOne = await this.repository.get(25121990);
 
         assert.instanceOf(shouldBeNoOne, NoOne);
     }
+
 
     @testCase('Test getOrDefault method should return the given default value when no model found')
     async testGetOrDefaultMethod() {
@@ -97,6 +86,80 @@ export default class DatabaseRepositoryTestSuite extends RepositoryTestSuite {
     async testGetOrFail() {
         try {
             await this.repository.getOrFail(25121990);
+        } catch (error) {
+            return assert.instanceOf(error, EntityNotFoundError);
+        }
+
+        throw new Error('Jeez! It\'s not throwing!!!');
+    }
+
+
+    @testCase()
+    async testAllMethod() {
+        let credentials = await this.repository.all();
+
+        assert.lengthOf(credentials, 3);
+        assert.equal(credentials[0].username, 'rikky');
+        assert.equal(credentials[1].username, 'lucy');
+        assert.equal(credentials[2].username, 'rocky');
+    }
+
+    @testCase()
+    async testFindMethodWithAGivenCondition() {
+        let condition = {
+            apply: query => query.where('username', 'like', '%ky')
+        };
+
+        let endsWithKyCredentials = await this.repository.find(condition);
+
+        assert.lengthOf(endsWithKyCredentials, 2);
+        assert.equal(endsWithKyCredentials[0].username, 'rikky');
+        assert.equal(endsWithKyCredentials[1].username, 'rocky');
+
+        let functionAsCondition = query => query.where('username', 'like', '%c%y');
+
+        let hasCyCredentials = await this.repository.find(functionAsCondition);
+
+        assert.lengthOf(endsWithKyCredentials, 2);
+        assert.equal(hasCyCredentials[0].username, 'lucy');
+        assert.equal(hasCyCredentials[1].username, 'rocky');
+    }
+
+    @testCase()
+    async testFirstMethodWithAGivenCondition() {
+        let condition = {
+            apply: query => query.where('username', 'like', '%ky')
+        };
+
+        let endsWithKyCredential = await this.repository.first(condition);
+
+        assert.equal(endsWithKyCredential.username, 'rikky');
+
+        let functionAsCondition = query => query.where('username', 'like', '%c%y');
+
+        let hasCyCredential = await this.repository.first(functionAsCondition);
+
+        assert.equal(hasCyCredential.username, 'lucy');
+    }
+
+    @testCase()
+    async testFirstMethodWillReturnDefaultModelWhenNoModelFound() {
+        let masterJediCondition = {
+            apply: query => query.where('username', 'Yoda')
+        };
+
+        // NoOne, you have found ༼˵⊙︿⊙˵༽
+        assert.instanceOf(await this.repository.first(masterJediCondition), NoOne);
+    }
+
+    @testCase()
+    async testFirstOrFailWillThrowModelNotFoundErrorWhenNoModelFound() {
+        let masterJediCondition = {
+            apply: query => query.where('username', 'Luke Skywalker')
+        };
+
+        try {
+            await this.repository.firstOrFail(masterJediCondition);
         } catch (error) {
             return assert.instanceOf(error, EntityNotFoundError);
         }

@@ -29,7 +29,7 @@ export class QueryableInterface {
      *
      * @param query
      */
-    decorate(query) { }
+    apply(query) { }
 }
 
 
@@ -41,34 +41,25 @@ export class RepositoryInterface {
     /**
      * Find models by a given condition
      *
-     * @param {QueryableInterface} condition
+     * @param {QueryableInterface|function} condition
      * @return {Promise<[]>}
      */
     async find(condition) { }
 
     /**
-     *
-     * @param {QueryableInterface} condition
-     * @param errorWhenFail
-     * @return {Promise<void>}
-     */
-    async findOrFail(condition, errorWhenFail = null) { }
-
-    /**
      * Find a model by a given condition
      *
-     * @param {QueryableInterface} condition
+     * @param {QueryableInterface|function} condition
      * @return {Promise<{}>}
      */
     async first(condition) { }
 
     /**
      *
-     * @param {QueryableInterface} condition
-     * @param errorWhenFail
-     * @return {Promise<void>}
+     * @param {QueryableInterface|function} condition
+     * @return {Promise<{}>}
      */
-    async firstOrFail(condition, errorWhenFail = null) { }
+    async firstOrFail(condition) { }
 
     /**
      * Get a model by its identifier
@@ -81,14 +72,13 @@ export class RepositoryInterface {
     /**
      *
      * @param identifier
-     * @param errorWhenFail
      * @return {Promise<{}>}
      */
-    async getOrFail(identifier, errorWhenFail = null) { }
+    async getOrFail(identifier) { }
 
     /**
      * Get all models from this repository
-     * @return {Promise<{}[]>}
+     * @return {Promise<[]>}
      */
     async all() { }
 
