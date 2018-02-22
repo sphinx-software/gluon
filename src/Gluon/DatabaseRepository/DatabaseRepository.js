@@ -209,6 +209,7 @@ export default class DatabaseRepository {
     /**
      *
      * @param Model
+     * @param modelSchema
      */
     setModel(Model, modelSchema) {
         this.Model       = Model;
@@ -250,9 +251,9 @@ export default class DatabaseRepository {
      * @return {Array}
      */
     getSpecifiedAggregations() {
-        let aggregatiosn = this.aggregations;
+        let aggregations = this.aggregations;
         this.aggregations = [];
-        return aggregatiosn;
+        return aggregations;
     }
 
 
