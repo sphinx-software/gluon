@@ -108,33 +108,4 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
             ]
         })
     }
-
-
-    // TODO Will move all of these bellow tests to the DatabaseRepositoryTestSuite.
-
-    // @testCase()
-    // async testGetMethodShouldReturnDefaultModelWhenNoModelFound() {
-    //     let shouldBeNoOne = await this.repository.get(25121990);
-    //
-    //     assert.instanceOf(shouldBeNoOne, NoOne);
-    //     assert.equal(shouldBeNoOne.username, 'I am no one ༼˵⊙︿⊙˵༽');
-    // }
-    //
-    // @testCase('Test getOrDefault method should return the given default value when no model found')
-    // async testGetOrDefaultMethod() {
-    //     let shouldBeEqualDefault = await this.repository.getOrDefault(25121990, 'default');
-    //
-    //     assert(shouldBeEqualDefault, 'default');
-    // }
-    //
-    // @testCase('Test getOrFail method show throw the E_ENTITY_NOT_FOUND error when no model found')
-    // async testGetOrFail() {
-    //     try {
-    //         await this.repository.getOrFail(25121990);
-    //     } catch (error) {
-    //         return assert.instanceOf(error, EntityNotFoundError);
-    //     }
-    //
-    //     throw new Error('Jeez! It\'s not throwing!!!');
-    // }
 }

@@ -8,19 +8,11 @@ export default class DatabaseRepository {
 
     macroBuilder    = null;
 
-    readConnection  = null;
-
-    writeConnection = null;
-
-    schemaReader    = null;
-
     Model           = null;
 
     modelSchema     = {};
 
-    dataMapper        = null;
-
-    modelQueryBuilder = null;
+    aggregations    = [];
 
     // -----------------------------------------------------------------------------------------------------------------
     // implementation methods
@@ -42,8 +34,21 @@ export default class DatabaseRepository {
         // todo
     }
 
-    all() {
-        // todo
+    /**
+     * Get all models
+     *
+     * @return {Promise<void>}
+     */
+    async all() {
+        let macros   = this.macroBuilder.context();
+        let entities = await this.engine.getMany(
+            this.Model,
+            this.modelSchema,
+            query => macros.modifyQuery(query),
+            this.getSpecifiedAggregations()
+        );
+
+        return macros.morphList(entities);
     }
 
     /**
@@ -56,7 +61,7 @@ export default class DatabaseRepository {
 
         let entity = await this.getOrNull(identifier);
 
-        return entity || this.returnWhenGetNull();
+        return entity || await this.returnWhenGetNull();
     }
 
     /**
@@ -82,22 +87,17 @@ export default class DatabaseRepository {
      */
     async getOrNull(identifier) {
 
-        let query = this.modelQueryBuilder
-            .makeSelect(this.modelSchema, this.readConnection.query())
-            .where(this.modelSchema.primaryKey, '=', identifier)
-        ;
-
-        // Apply the query scope
         let macros = this.macroBuilder.context();
+        let entity = await this.engine.getOne(
+            this.Model,
+            this.modelSchema,
+            query => macros.modifyQuery(query.where(this.modelSchema.primaryKey, identifier)),
+            this.getSpecifiedAggregations()
+        );
 
-        macros.modifyQuery(query);
-
-        // Execute the query
-        let rowSet = await query;
-
-        let entity = rowSet.length ?
-            await this.dataMapper.mapModel(rowSet, this.Model, this.modelSchema) : null
-        ;
+        if (!entity) {
+            return null;
+        }
 
         return macros.morphOne(entity);
     }
@@ -112,11 +112,7 @@ export default class DatabaseRepository {
     async getOrFail(identifier) {
         let entity = await this.getOrNull(identifier);
 
-        if (!entity) {
-            this.throwsEntityNotFound();
-        }
-
-        return entity;
+        return entity || this.throwsEntityNotFound();
     }
 
     find(condition) {
@@ -212,64 +208,51 @@ export default class DatabaseRepository {
 
     /**
      *
-     * @param {ModelQueryBuilder} modelQueryBuilder
-     * @return {DatabaseRepository}
-     */
-    setModelQueryBuilder(modelQueryBuilder) {
-        this.modelQueryBuilder = modelQueryBuilder;
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {EntitySchemaReader} reader
-     * @return {DatabaseRepository}
-     */
-    setSchemaReader(reader) {
-        this.schemaReader = reader;
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {DataMapper} mapper
-     * @return {DatabaseRepository}
-     */
-    setDataMapper(mapper) {
-        this.dataMapper = mapper;
-
-        return this;
-    }
-
-    /**
-     *
      * @param Model
      */
-    setModel(Model) {
+    setModel(Model, modelSchema) {
         this.Model       = Model;
-        this.modelSchema = this.schemaReader.read(Model);
+        this.modelSchema = modelSchema;
+
+        return this;
+    }
+
+    /**
+     *
+     * @param engine
+     * @return {DatabaseRepository}
+     */
+    setModelQueryEngine(engine) {
+        this.engine = engine;
 
         return this;
     }
 
 
     // -----------------------------------------------------------------------------------------------------------------
-    // Database connections methods
+    // Aggregation Methods
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
+     * Specify an aggregation that should be cast as eager
      *
-     * @param {DatabaseConnectionInterface} read
-     * @param {DatabaseConnectionInterface} write
+     * @param aggregation
      * @return {DatabaseRepository}
      */
-    setConnection(read, write) {
-        this.readConnection  = read;
-        this.writeConnection = write;
-
+    with(aggregation) {
+        this.aggregations.push(aggregation);
         return this;
+    }
+
+    /**
+     * Get the specified aggregations given by the user
+     *
+     * @return {Array}
+     */
+    getSpecifiedAggregations() {
+        let aggregatiosn = this.aggregations;
+        this.aggregations = [];
+        return aggregatiosn;
     }
 
 
