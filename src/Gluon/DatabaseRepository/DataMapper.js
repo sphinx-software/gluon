@@ -130,7 +130,6 @@ export default class DataMapper {
         let databaseRow = databaseRowSet[0];
 
         // In this situation, ensure rowSet is referring to one unique model.
-        // So for mapping itself without aggregation, we can blindly pick the first row
         let filteredDatabaseRowSet = databaseRowSet.filter(row => row[schema.primaryKey] === databaseRow[schema.primaryKey]);
 
         let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
