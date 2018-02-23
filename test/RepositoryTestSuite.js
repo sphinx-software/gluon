@@ -182,12 +182,22 @@ export default class RepositoryTestSuite extends FusionTestSuite {
     config() {
         return {
             database: {
-                default: "mysql",
+                default: process.env.GLUON_IN_DOCKER ? "mysqlDocker" : "mysql",
                 connections: {
                     mysql: {
                         client: 'mysql',
                         connection: {
                             host : 'localhost',
+                            user : 'gluon',
+                            password : 'gluon',
+                            database : 'gluon'
+                        }
+                    },
+
+                    mysqlDocker: {
+                        client: 'mysql',
+                        connection: {
+                            host : 'mysql',
                             user : 'gluon',
                             password : 'gluon',
                             database : 'gluon'

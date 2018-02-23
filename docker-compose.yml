@@ -7,6 +7,8 @@ services:
       - .:/gluon
       - /gluon/node_modules
     command: npm run build
+    environment:
+      - GLUON_IN_DOCKER="yes"
     links:
       - mysql
 
@@ -14,6 +16,7 @@ services:
     build: "."
     environment:
       - NODE_ENV=test
+      - GLUON_IN_DOCKER="yes"
     volumes:
       - .:/gluon
       - /gluon/node_modules
