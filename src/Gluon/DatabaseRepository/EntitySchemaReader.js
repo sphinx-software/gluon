@@ -19,7 +19,7 @@ export default class EntitySchemaReader {
     /**
      *
      * @param Entity
-     * @return {{table: String, fields: {}, primaryKey: string|null, eagerAggregations: {}, lazyAggregations: {}}}
+     * @return {{entity: *, table: *[], fields: {}, primaryKey: null, eagerAggregations: *, lazyAggregations: *}}
      */
     read(Entity) {
 
@@ -40,6 +40,7 @@ export default class EntitySchemaReader {
         let eagerKeys    = Reflect.getMetadata('gluon.entity.eager', Entity) || [];
 
         return {
+            entity : Entity,
             table  : table,
             fields : fields,
             primaryKey        : foundPkFieldName ? fields[foundPkFieldName].name : null,

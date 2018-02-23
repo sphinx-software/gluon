@@ -21,13 +21,12 @@ export default class ModelQueryEngine {
     /**
      * Query for a model
      *
-     * @param {Function|constructor} Model
      * @param {*} schema
      * @param {function} queryHook
      * @param {array} aggregations
      * @return {Promise<*>}
      */
-    async getOne(Model, schema, queryHook, aggregations = []) {
+    async getOne(schema, queryHook, aggregations = []) {
         let query = this.builder.makeSelect(schema, queryHook(this.connection.query()), aggregations);
 
         let rowSet = await query;
@@ -36,7 +35,7 @@ export default class ModelQueryEngine {
             return null;
         }
 
-        let model = await this.mapper.mapModel(rowSet, Model, schema, aggregations);
+        let model = await this.mapper.mapModel(rowSet, schema, aggregations);
 
         this.resolveLazyAggregations(model, schema, aggregations);
 
@@ -46,13 +45,12 @@ export default class ModelQueryEngine {
     /**
      * Query for models
      *
-     * @param {Function|constructor} Model
      * @param {*} schema
      * @param {function} queryHook
      * @param {array} aggregations
      * @return {Promise<*>}
      */
-    async getMany(Model, schema, queryHook, aggregations = []) {
+    async getMany(schema, queryHook, aggregations = []) {
         let query = this.builder.makeSelect(schema, queryHook(this.connection.query()), aggregations);
 
         let rowSet = await query;
@@ -61,7 +59,7 @@ export default class ModelQueryEngine {
             return [];
         }
 
-        let models = await this.mapper.mapModels(rowSet, Model, schema, aggregations);
+        let models = await this.mapper.mapModels(rowSet, schema, aggregations);
 
         models.forEach(model => this.resolveLazyAggregations(model, schema, aggregations));
 
@@ -81,7 +79,7 @@ export default class ModelQueryEngine {
 
             let primaryKeyField = lodash.findKey(schema.fields, field => field.type === PrimaryKey);
             let parameters      = [
-                aggregation.entity, aggregation.schema,
+                aggregation.schema,
                 query => query.where(aggregation.foreignKey, model[primaryKeyField])
             ];
 

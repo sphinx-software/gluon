@@ -93,7 +93,7 @@ export default class DataMapper {
         await Promise.props(lodash.mapValues(aggregations, async(aggregationSchema, modelPropertyName) => {
 
             let aggregatedResult = await this.mapModels(
-                databaseRowSet, aggregationSchema.entity, aggregationSchema.schema
+                databaseRowSet, aggregationSchema.schema
             );
 
             let aggregatedModelValue = aggregationSchema.many ? aggregatedResult : (aggregatedResult[0] || null);
@@ -116,12 +116,11 @@ export default class DataMapper {
      * Every single row in the databaseRowSet must refer to one unique Model.
      *
      * @param databaseRowSet
-     * @param Model
      * @param schema
      * @param aggregations
      * @return {Promise<{}>}
      */
-    async mapModel(databaseRowSet, Model, schema, aggregations = []) {
+    async mapModel(databaseRowSet, schema, aggregations = []) {
 
         if (!databaseRowSet.length) {
             return null;
@@ -132,7 +131,7 @@ export default class DataMapper {
         // In this situation, ensure rowSet is referring to one unique model.
         let filteredDatabaseRowSet = databaseRowSet.filter(row => row[schema.primaryKey] === databaseRow[schema.primaryKey]);
 
-        let model = await this.mapModelWithoutAggregation(databaseRow, Model, schema.fields);
+        let model = await this.mapModelWithoutAggregation(databaseRow, schema.entity, schema.fields);
 
         await this.mapModelWithAggregation(filteredDatabaseRowSet, model, schema.eagerAggregations);
         await this.mapModelWithAggregation(filteredDatabaseRowSet, model, lodash.pick(schema.lazyAggregations, aggregations));
@@ -144,19 +143,18 @@ export default class DataMapper {
      * Map models with its related databaseRowSet.
      *
      * @param databaseRowSet
-     * @param Model
      * @param schema
      * @param aggregations
      * @return {Promise<*>}
      */
-    mapModels(databaseRowSet, Model, schema, aggregations = []) {
+    mapModels(databaseRowSet, schema, aggregations = []) {
 
         // Distinct the rowSet by the aggregated model id:
         let primaryKeyColumn = schema.primaryKey;
 
         if (!primaryKeyColumn) {
             throw new Error(`E_DATA_MAPPER: Could not map data of non-primary key entity.` +
-                ` Entity [${Model.name}] does not have [PrimaryKey] field type`
+                ` Entity [${schema.entity.name}] does not have [PrimaryKey] field type`
             );
         }
 
@@ -168,7 +166,7 @@ export default class DataMapper {
 
         // Then we'll try to build each one of them, and repeat the steps recursively with aggregations
         let mappingPromises = lodash.values(groupedRecordsByPk)
-            .map(groupedRowSet => this.mapModel(groupedRowSet, Model, schema, aggregations))
+            .map(groupedRowSet => this.mapModel(groupedRowSet, schema, aggregations))
         ;
 
 

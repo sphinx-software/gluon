@@ -73,7 +73,7 @@ export default class DataMapperTestSuite extends TestSuite {
 
         let model = await this.mapper.mapModel([{
             'model_stubs.foo_bar': JSON.stringify({foo: 'bar'})
-        }], ModelStub, this.reader.read(ModelStub));
+        }], this.reader.read(ModelStub));
 
         assert.instanceOf(model, ModelStub);
         assert.deepEqual(model.fooBar, {foo: "bar"});
@@ -89,7 +89,7 @@ export default class DataMapperTestSuite extends TestSuite {
             'model_stub_with_value_objects.created_at': createdAtTimestamp,
             'model_stub_with_value_objects.updated_at': updatedAtTimestamp,
             'model_stub_with_value_objects.foo_bar': JSON.stringify({foo: 'bar'})
-        }], ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject));
+        }], this.reader.read(ModelStubWithValueObject));
 
         assert.instanceOf(model, ModelStubWithValueObject);
 
@@ -162,11 +162,7 @@ export default class DataMapperTestSuite extends TestSuite {
             }
         ];
 
-        let models = await this.mapper.mapModels(
-            rowSet,
-            ModelStubWithAggregation,
-            this.reader.read(ModelStubWithAggregation)
-        );
+        let models = await this.mapper.mapModels(rowSet, this.reader.read(ModelStubWithAggregation));
 
         let model = models[0];
 
@@ -200,13 +196,13 @@ export default class DataMapperTestSuite extends TestSuite {
         let rowSet = [];
 
         let shouldBeNull = await this.mapper
-            .mapModel(rowSet, ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject))
+            .mapModel(rowSet, this.reader.read(ModelStubWithValueObject))
         ;
 
         assert.isNull(shouldBeNull);
 
         let shouldBeEmpty = await this.mapper
-            .mapModels(rowSet, ModelStubWithValueObject, this.reader.read(ModelStubWithValueObject))
+            .mapModels(rowSet, this.reader.read(ModelStubWithValueObject))
         ;
 
         assert.isEmpty(shouldBeEmpty);
@@ -246,7 +242,7 @@ export default class DataMapperTestSuite extends TestSuite {
         ];
 
         let results = await this.mapper
-            .mapModels(rowSet, ModelStubWithAggregation, this.reader.read(ModelStubWithAggregation));
+            .mapModels(rowSet, this.reader.read(ModelStubWithAggregation));
 
         assert.lengthOf(results, 2);
 

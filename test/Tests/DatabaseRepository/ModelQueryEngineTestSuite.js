@@ -39,7 +39,7 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
     @testCase()
     async testGetOneMethodShouldReturnModelProperly() {
 
-        let rikky    = await this.engine.getOne(Credential, this.schema, query => query);
+        let rikky    = await this.engine.getOne(this.schema, query => query);
         let posts    = await rikky.posts();
         let comments = await rikky.comments();
 
@@ -73,7 +73,6 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
     @testCase()
     async testGetOneMethodShouldReturnModelProperlyWithGivenAggregations() {
         let rikky = await this.engine.getOne(
-            Credential,
             this.schema,
             query => query,
             ['comments']

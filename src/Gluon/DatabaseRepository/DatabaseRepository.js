@@ -8,15 +8,9 @@ export default class DatabaseRepository {
 
     /**
      * @protected
-     * @type {null}
+     * @type {MacroBuilder}
      */
     macroBuilder    = null;
-
-    /**
-     * @protected
-     * @type {null}
-     */
-    Model           = null;
 
     /**
      * @protected
@@ -69,7 +63,6 @@ export default class DatabaseRepository {
     async all() {
         let macros   = this.macroBuilder.context();
         let entities = await this.engine.getMany(
-            this.Model,
             this.modelSchema,
             query => macros.modifyQuery(query),
             this.getSpecifiedAggregations()
@@ -113,7 +106,6 @@ export default class DatabaseRepository {
 
         let macros = this.macroBuilder.context();
         let entity = await this.engine.getOne(
-            this.Model,
             this.modelSchema,
             query => macros.modifyQuery(query.where(this.modelSchema.primaryKey, identifier)),
             this.getSpecifiedAggregations()
@@ -147,7 +139,6 @@ export default class DatabaseRepository {
     async find(condition) {
         let macros   = this.macroBuilder.context();
         let entities = await this.engine.getMany(
-            this.Model,
             this.modelSchema,
             query => {
                 lodash.isFunction(condition) ? condition(query) : condition.apply(query);
@@ -186,7 +177,6 @@ export default class DatabaseRepository {
     async firstOrNull(condition) {
         let macros   = this.macroBuilder.context();
         let entity   = await this.engine.getOne(
-            this.Model,
             this.modelSchema,
             query => {
                 lodash.isFunction(condition) ? condition(query) : condition.apply(query);
@@ -276,11 +266,9 @@ export default class DatabaseRepository {
 
     /**
      *
-     * @param Model
      * @param modelSchema
      */
-    setModel(Model, modelSchema) {
-        this.Model       = Model;
+    setModel(modelSchema) {
         this.modelSchema = modelSchema;
 
         return this;

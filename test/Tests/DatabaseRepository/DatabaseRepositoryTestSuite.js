@@ -29,7 +29,7 @@ export default class DatabaseRepositoryTestSuite extends RepositoryTestSuite {
         let schema = new EntitySchemaReader(new NamingConvention()).read(Credential);
 
         this.repository = new CredentialRepository()
-            .setModel(Credential, schema)
+            .setModel(schema)
             .setModelQueryEngine(engine)
             .setMacroBuilder(new MacroBuilder())
         ;

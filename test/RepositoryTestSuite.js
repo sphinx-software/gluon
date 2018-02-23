@@ -187,7 +187,7 @@ export default class RepositoryTestSuite extends FusionTestSuite {
                     mysql: {
                         client: 'mysql',
                         connection: {
-                            host : 'mysql',
+                            host : 'localhost',
                             user : 'gluon',
                             password : 'gluon',
                             database : 'gluon'

@@ -67,6 +67,7 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
         let results = schemaReader.read(FooModel);
 
         assert.deepEqual(results, {
+            entity: FooModel,
             primaryKey: 'foo_models.id_field',
             table: "foo_models",
             fields: {
@@ -113,6 +114,7 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                     name: undefined,
                     foreignKey: "foo_models_id_field",
                     schema: {
+                        entity: HelloModel,
                         primaryKey: "hello_models.id_field",
                         table: "hello_models",
                         fields: {
@@ -142,6 +144,7 @@ export default class EntitySchemaReaderTestSuite extends TestSuite {
                     name: undefined,
                     foreignKey: "foo_models_id_field",
                     schema: {
+                        entity: WorldModel,
                         primaryKey: "world_models.id_field",
                         table: "world_models",
                         fields: {
