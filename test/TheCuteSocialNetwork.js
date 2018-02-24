@@ -1,5 +1,3 @@
-
-// Test Helpers
 import {Hashed, PrimaryKey, String, Timestamps, Reference} from "Gluon/DataType";
 import {aggregations, eager, hidden, readonly, type} from "Gluon/Entity";
 
