@@ -1,68 +1,11 @@
-import {FusionTestSuite} from "WaveFunction";
-
 import * as GluonPackage from "Gluon";
 import * as DatabasePackage from "Fusion/Database";
 import * as MetaInjectorPackage from "Fusion/MetaInjector";
 
+import {FusionTestSuite} from "WaveFunction";
 import {DatabaseManagerInterface} from "Fusion";
-import {aggregation, aggregations, eager, hidden, readonly, type} from "Gluon/Entity";
-import {Hashed, Integer, PrimaryKey, String, Timestamps} from "Gluon/DataType";
-import Reference from "../src/Gluon/DataType/Reference";
+import {Credential, Comment, Post} from "./TheCuteSocialNetwork";
 
-
-// Test Helpers
-export class Comment {
-    @hidden()
-    @type(PrimaryKey)
-    id = null;
-
-    @type(String)
-    content = null;
-
-    @readonly()
-    @type(Reference, 'commenter_id')
-    commenter = null;
-}
-
-export class Post {
-
-    @type(PrimaryKey)
-    id = null;
-
-    @type(String)
-    title = null;
-
-    @type(String)
-    content = null;
-
-    @eager()
-    @aggregations(Comment, 'post_id')
-    comments = null;
-
-    @readonly()
-    @type(Reference, 'credentials_id')
-    author = null;
-}
-
-export class Credential {
-
-    @type(PrimaryKey)
-    id = null;
-
-    @type(String)
-    username = null;
-
-    @aggregations(Post)
-    posts = [];
-
-    @hidden()
-    @type(Hashed)
-    password = null;
-
-    @hidden()
-    @type(Timestamps)
-    timestamps = null;
-}
 
 export default class RepositoryTestSuite extends FusionTestSuite {
 

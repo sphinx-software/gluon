@@ -1,10 +1,12 @@
-import RepositoryTestSuite, {Credential} from "../../RepositoryTestSuite";
+import RepositoryTestSuite from "../../RepositoryTestSuite";
 import {testCase} from "WaveFunction";
 import {assert} from "chai";
 import {
     DataMapper, EntitySchemaReader, ModelQueryBuilder, MacroBuilder,
     ModelQueryEngine, NamingConvention, DatabaseRepository, EntityNotFoundError
 } from "Gluon";
+
+import {Credential} from "../../TheCuteSocialNetwork";
 
 class NoOne {
 

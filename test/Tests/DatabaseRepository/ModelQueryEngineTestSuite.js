@@ -1,7 +1,9 @@
 import {testCase} from "WaveFunction";
 import {assert} from "chai";
 import { ModelQueryBuilder, EntitySchemaReader, NamingConvention, DataMapper, ModelQueryEngine} from "Gluon/DatabaseRepository";
-import {default as RepositoryTestSuite, Credential, Post, Comment} from "../../RepositoryTestSuite";
+import RepositoryTestSuite from "../../RepositoryTestSuite";
+
+import {Credential, Post} from "../../TheCuteSocialNetwork";
 
 export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
 
@@ -79,11 +81,21 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
                                 _: "GLUON_REFERENCE",
                                 identity: 2,
                                 reference: "Reference"
+                            },
+                            post: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
                             }
                         },
                         {
                             content: "Yes, sure!",
                             commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
+                            },
+                            post: {
                                 _: "GLUON_REFERENCE",
                                 identity: 1,
                                 reference: "Reference"
@@ -95,11 +107,21 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
                                 _: "GLUON_REFERENCE",
                                 identity: 3,
                                 reference: "Reference"
+                            },
+                            post: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
                             }
                         },
                         {
                             content: "Okay, We'll try our best.",
                             commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
+                            },
+                            post: {
                                 _: "GLUON_REFERENCE",
                                 identity: 1,
                                 reference: "Reference"
