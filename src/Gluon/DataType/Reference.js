@@ -65,7 +65,7 @@ export default class Reference extends PrimitiveType {
      * @return {Promise<Reference>}
      */
     static async fromStorage(storageValue) {
-        return new Reference(storageValue);
+        return new Reference(parseInt(storageValue) || storageValue);
     }
 
     /**

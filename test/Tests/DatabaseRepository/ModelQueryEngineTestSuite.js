@@ -41,32 +41,13 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
 
         let rikky    = await this.engine.getOne(this.schema, query => query);
         let posts    = await rikky.posts();
-        let comments = await rikky.comments();
 
         assert.instanceOf(rikky, Credential);
         assert.instanceOf(posts[0], Post);
-        assert.instanceOf(comments[0], Comment);
 
         assert.deepEqual(rikky.toJson(), {
             id: 1,
-            username: 'rikky',
-
-            // Since posts was in eager aggregation
-            // they was shown here, but comments wasn't
-            posts: [
-                {
-                    title: 'Fusion',
-                    content: 'The cute framework'
-                },
-                {
-                    title: 'Gluon',
-                    content: 'The cute data modeler'
-                },
-                {
-                    title: 'WaveFunction',
-                    content: 'The cute testing tool'
-                }
-            ]
+            username: 'rikky'
         });
     }
 
@@ -75,36 +56,81 @@ export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
         let rikky = await this.engine.getOne(
             this.schema,
             query => query,
-            ['comments']
+            ['posts']
         );
 
         assert.deepEqual(rikky.toJson(), {
             id: 1,
             username: 'rikky',
-
             posts: [
                 {
+                    id: 1,
                     title: 'Fusion',
-                    content: 'The cute framework'
-                },
-                {
-                    title: 'Gluon',
-                    content: 'The cute data modeler'
-                },
-                {
-                    title: 'WaveFunction',
-                    content: 'The cute testing tool'
-                }
-            ],
+                    content: 'The cute framework',
+                    author: {
+                        _: "GLUON_REFERENCE",
+                        reference: "Reference",
+                        identity: 1
+                    },
+                    comments: [
+                        {
+                            content: "Is it cute?",
+                            commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 2,
+                                reference: "Reference"
+                            }
+                        },
+                        {
+                            content: "Yes, sure!",
+                            commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
+                            }
+                        },
+                        {
+                            content: "But it needs to be more cute.",
+                            commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 3,
+                                reference: "Reference"
+                            }
+                        },
+                        {
+                            content: "Okay, We'll try our best.",
+                            commenter: {
+                                _: "GLUON_REFERENCE",
+                                identity: 1,
+                                reference: "Reference"
+                            }
+                        },
 
-            comments: [
-                {
-                    content: 'Yes, sure!'
+                    ]
                 },
                 {
-                    content: 'Okay, We\'ll try our best.'
+                    id: 2,
+                    title: 'Gluon',
+                    content: 'The cute data modeler',
+                    author: {
+                        _: "GLUON_REFERENCE",
+                        reference: "Reference",
+                        identity: 1
+                    },
+                    comments: []
+                },
+                {
+                    id: 3,
+                    title: 'WaveFunction',
+                    content: 'The cute testing tool',
+                    author: {
+                        _: "GLUON_REFERENCE",
+                        reference: "Reference",
+                        identity: 1
+                    },
+                    comments: []
                 }
             ]
-        })
+        });
     }
 }

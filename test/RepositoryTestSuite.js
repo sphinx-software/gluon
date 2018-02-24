@@ -7,6 +7,7 @@ import * as MetaInjectorPackage from "Fusion/MetaInjector";
 import {DatabaseManagerInterface} from "Fusion";
 import {aggregation, aggregations, eager, hidden, readonly, type} from "Gluon/Entity";
 import {Hashed, Integer, PrimaryKey, String, Timestamps} from "Gluon/DataType";
+import Reference from "../src/Gluon/DataType/Reference";
 
 
 // Test Helpers
@@ -17,11 +18,14 @@ export class Comment {
 
     @type(String)
     content = null;
+
+    @readonly()
+    @type(Reference, 'commenter_id')
+    commenter = null;
 }
 
 export class Post {
 
-    @hidden()
     @type(PrimaryKey)
     id = null;
 
@@ -31,13 +35,13 @@ export class Post {
     @type(String)
     content = null;
 
-    @aggregation(Comment, 'post_id')
+    @eager()
+    @aggregations(Comment, 'post_id')
     comments = null;
 
-    @hidden()
     @readonly()
-    @type(Integer)
-    credentialsId = null;
+    @type(Reference, 'credentials_id')
+    author = null;
 }
 
 export class Credential {
@@ -48,12 +52,8 @@ export class Credential {
     @type(String)
     username = null;
 
-    @eager()
     @aggregations(Post)
     posts = [];
-
-    @aggregations(Comment, 'commenter_id')
-    comments = [];
 
     @hidden()
     @type(Hashed)
