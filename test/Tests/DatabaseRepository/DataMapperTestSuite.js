@@ -1,7 +1,7 @@
 import {TestSuite, testCase} from "WaveFunction";
 import {assert} from "chai";
 import {DataMapper, EntitySchemaReader, NamingConvention, aggregation, aggregations, eager} from "Gluon";
-import {type, PrimaryKey, Json, Timestamps, String} from "Gluon";
+import {type, PrimaryKey, Json, Timestamps, String, Reference} from "Gluon";
 import Container from "@sphinx-software/container";
 import {EventEmitter} from "events";
 
@@ -46,6 +46,9 @@ class ModelStubWithAggregation {
     @eager()
     @aggregations(AggregatedModelStub)
     multiAggregation = [];
+
+    @type(Reference, 'ref_id')
+    someReference = null;
 }
 
 export default class DataMapperTestSuite extends TestSuite {
@@ -122,6 +125,7 @@ export default class DataMapperTestSuite extends TestSuite {
             {
                 // The Main model row set
                 "model_stub_with_aggregations.id": 1,
+                "model_stub_with_aggregations.ref_id": 1,
 
                 // The aggregated models
                 'model_stub_with_value_objects.id': 1,
@@ -136,6 +140,7 @@ export default class DataMapperTestSuite extends TestSuite {
             {
                 // The Main model row set
                 "model_stub_with_aggregations.id": 1,
+                "model_stub_with_aggregations.ref_id": 1,
 
                 // The aggregated models
                 'model_stub_with_value_objects.id': 1,
@@ -150,6 +155,7 @@ export default class DataMapperTestSuite extends TestSuite {
             {
                 // The Main model row set
                 "model_stub_with_aggregations.id": 2,
+                "model_stub_with_aggregations.ref_id": 2,
 
                 // The aggregated models
                 'model_stub_with_value_objects.id': 3,
@@ -189,6 +195,8 @@ export default class DataMapperTestSuite extends TestSuite {
 
         assert.instanceOf(shouldBeListOfAggregatedModelStub[1], AggregatedModelStub);
         assert.equal(shouldBeListOfAggregatedModelStub[1].id, 2);
+
+        assert.instanceOf(model.someReference, Reference);
     }
 
     @testCase()
@@ -214,6 +222,7 @@ export default class DataMapperTestSuite extends TestSuite {
             {
                 // The Main model row set
                 "model_stub_with_aggregations.id": 1,
+                "model_stub_with_aggregations.ref_id": 1,
 
                 // The aggregated models
                 'model_stub_with_value_objects.id': null,
@@ -228,6 +237,7 @@ export default class DataMapperTestSuite extends TestSuite {
             {
                 // The Main model row set
                 "model_stub_with_aggregations.id": 2,
+                "model_stub_with_aggregations.ref_id": 2,
 
                 // The aggregated models
                 'model_stub_with_value_objects.id': null,

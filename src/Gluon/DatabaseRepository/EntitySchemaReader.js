@@ -1,6 +1,7 @@
 import lodash from "lodash";
 import PrimitiveType from "../DataType/PrimitiveType";
 import PrimaryKey from "../DataType/PrimaryKey";
+import {reference} from "../Entity";
 
 /**
  * This class reads the decorated model's schema and gives instruction

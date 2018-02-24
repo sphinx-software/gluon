@@ -4,6 +4,7 @@ export Hashed from "./Hashed";
 export Integer from "./Integer";
 export Json from "./Json";
 export PrimaryKey from "./PrimaryKey";
+export Reference from "./Reference";
 export SoftDelete from "./SoftDelete";
 export String from "./String";
 export Timestamp from "./Timestamp";
