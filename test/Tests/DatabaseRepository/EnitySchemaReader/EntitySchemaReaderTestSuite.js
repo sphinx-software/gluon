@@ -6,7 +6,7 @@ import {
     type, aggregation, aggregations, eager,
     EntitySchemaReader, NamingConvention,
     String, PrimaryKey, Timestamps, Hashed, Json, Timestamp
-} from "Gluon";
+} from "Gluon/index";
 
 class BarModel {
     @type(Json)

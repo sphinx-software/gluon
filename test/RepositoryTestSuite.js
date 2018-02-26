@@ -1,4 +1,5 @@
 import * as GluonPackage from "Gluon";
+import * as HashPackage from "Fusion/Hash";
 import * as DatabasePackage from "Fusion/Database";
 import * as MetaInjectorPackage from "Fusion/MetaInjector";
 
@@ -12,7 +13,7 @@ export default class RepositoryTestSuite extends FusionTestSuite {
 
     manifest() {
 
-        return {...MetaInjectorPackage, ...DatabasePackage, ...GluonPackage};
+        return {...MetaInjectorPackage, ...DatabasePackage, ...GluonPackage, ...HashPackage};
     }
 
     async fusionActivated(context) {
@@ -124,6 +125,9 @@ export default class RepositoryTestSuite extends FusionTestSuite {
 
     config() {
         return {
+            hash: {
+                rounds: 10
+            },
             database: {
                 default: process.env.GLUON_IN_DOCKER ? "mysqlDocker" : "mysql",
                 connections: {

@@ -1,9 +1,9 @@
 import {testCase} from "WaveFunction";
 import {assert} from "chai";
-import { ModelQueryBuilder, EntitySchemaReader, NamingConvention, DataMapper, ModelQueryEngine} from "Gluon/DatabaseRepository";
-import RepositoryTestSuite from "../../RepositoryTestSuite";
+import { ModelQueryBuilder, EntitySchemaReader, NamingConvention, DataMapper, ModelQueryEngine} from "Gluon/DatabaseRepository/index";
+import RepositoryTestSuite from "../../../RepositoryTestSuite";
 
-import {Credential, Post} from "../../TheCuteSocialNetwork";
+import {Credential, Post} from "../../../TheCuteSocialNetwork";
 
 export default class ModelQueryEngineTestSuite extends RepositoryTestSuite {
 

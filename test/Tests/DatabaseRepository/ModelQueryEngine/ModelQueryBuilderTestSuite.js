@@ -4,7 +4,7 @@ import {
     String, eager, aggregation, aggregations, model,
     Hashed, Json, PrimaryKey, Timestamps,
     EntitySchemaReader
-} from "Gluon";
+} from "Gluon/index";
 
 import {testCase} from "WaveFunction";
 import sinon from "sinon";

@@ -61,15 +61,24 @@ export default class Reference extends PrimitiveType {
 
     /**
      *
+     * @param json
+     * @return {Reference}
+     */
+    static fromJson(json) {
+        return new this(json.identity);
+    }
+
+    /**
+     * @abstract
      * @param storageValue
      * @return {Promise<Reference>}
      */
     static async fromStorage(storageValue) {
-        return new Reference(parseInt(storageValue) || storageValue);
+        return new this(parseInt(storageValue) || storageValue);
     }
 
     /**
-     *
+     * @abstract
      * @param {Reference} modelValue
      * @return {Promise<*>}
      */

@@ -169,7 +169,6 @@ export default class DataMapper {
             .map(groupedRowSet => this.mapModel(groupedRowSet, schema, aggregations))
         ;
 
-
         return Promise.all(mappingPromises);
     }
 }

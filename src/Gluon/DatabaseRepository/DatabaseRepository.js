@@ -62,7 +62,7 @@ export default class DatabaseRepository {
      */
     async all() {
         let macros   = this.macroBuilder.context();
-        let entities = await this.engine.getMany(
+        let entities = await this.queryEngine.getMany(
             this.modelSchema,
             query => macros.modifyQuery(query),
             this.getSpecifiedAggregations()
@@ -105,7 +105,7 @@ export default class DatabaseRepository {
     async getOrNull(identifier) {
 
         let macros = this.macroBuilder.context();
-        let entity = await this.engine.getOne(
+        let entity = await this.queryEngine.getOne(
             this.modelSchema,
             query => macros.modifyQuery(query.where(this.modelSchema.primaryKey, identifier)),
             this.getSpecifiedAggregations()
@@ -138,7 +138,7 @@ export default class DatabaseRepository {
      */
     async find(condition) {
         let macros   = this.macroBuilder.context();
-        let entities = await this.engine.getMany(
+        let entities = await this.queryEngine.getMany(
             this.modelSchema,
             query => {
                 lodash.isFunction(condition) ? condition(query) : condition.apply(query);
@@ -176,7 +176,7 @@ export default class DatabaseRepository {
      */
     async firstOrNull(condition) {
         let macros   = this.macroBuilder.context();
-        let entity   = await this.engine.getOne(
+        let entity   = await this.queryEngine.getOne(
             this.modelSchema,
             query => {
                 lodash.isFunction(condition) ? condition(query) : condition.apply(query);
@@ -276,11 +276,11 @@ export default class DatabaseRepository {
 
     /**
      *
-     * @param engine
+     * @param {ModelQueryEngine} engine
      * @return {DatabaseRepository}
      */
     setModelQueryEngine(engine) {
-        this.engine = engine;
+        this.queryEngine = engine;
 
         return this;
     }

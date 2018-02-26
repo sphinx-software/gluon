@@ -12,7 +12,7 @@ services:
     links:
       - mysql
 
-  dev:
+  test:
     build: "."
     environment:
       - NODE_ENV=test

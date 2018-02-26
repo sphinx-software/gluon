@@ -37,7 +37,7 @@ class AggregatedModelStub {
 class ModelStubWithAggregation {
 
     @type(PrimaryKey)
-    id = 1;
+    id = null;
 
     @eager()
     @aggregation(ModelStubWithValueObject)
@@ -103,7 +103,7 @@ export default class DataMapperTestSuite extends TestSuite {
         assert.equal(model.timestamps.createdAt.getTime(), createdAtTimestamp);
 
         assert.instanceOf(model.timestamps.updatedAt, Date);
-        assert.equal(model.timestamps.updatedAt.getTime(), createdAtTimestamp);
+        assert.equal(model.timestamps.updatedAt.getTime(), updatedAtTimestamp);
 
         // Assertions on otherValue field => ModelStub instance
         assert.instanceOf(model.otherValue, ModelStub);
