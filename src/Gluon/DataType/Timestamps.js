@@ -6,7 +6,7 @@ import {bind} from "Fusion/MetaInjector";
 export default class Timestamps {
 
     @type(Timestamp)
-    createdAt = new Date();
+    createdAt = null;
 
     @type(Timestamp)
     updatedAt = null;

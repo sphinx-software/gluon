@@ -1,7 +1,3 @@
-import lodash from "lodash";
-import {PrimaryKey} from "../../DataType/index";
-import PrimitiveType from "../../DataType/PrimitiveType";
-
 export default class ModelPersistenceEngine {
 
     connection   = null;
@@ -14,6 +10,6 @@ export default class ModelPersistenceEngine {
     }
 
     async insert(json, schema) {
-        console.log(await this.mapper.mapRow(json, schema.fields));
+        /// todo
     }
 }

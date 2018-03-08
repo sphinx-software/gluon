@@ -171,33 +171,4 @@ export default class DataMapper {
 
         return Promise.all(mappingPromises);
     }
-
-    async mapRow(json, fieldsSchema) {
-        let row = {};
-
-        for(let fieldName in fieldsSchema) {
-            if (fieldsSchema.hasOwnProperty(fieldName)) {
-                let fieldSchema = fieldsSchema[fieldName];
-                let fieldValue  = json[fieldName];
-
-                if (fieldSchema.type.prototype instanceof PrimitiveType) {
-                    // For primitive types, we'll consider null as null value
-                    // Which mean the user REALLY want to set the given data as
-                    // a null value
-                    if (! lodash.isUndefined(fieldValue)) {
-                        row[fieldSchema.name] = fieldValue
-                    }
-                } else {
-                    // For nested value object, we'll consider null as not set
-                    if (!lodash.isNull(fieldValue) && !lodash.isUndefined(fieldValue)) {
-                        let nestedRow = await this.mapRow(fieldValue, fieldSchema.name);
-
-                        row = {...row, ...nestedRow};
-                    }
-                }
-            }
-        }
-
-        return row;
-    }
 }
